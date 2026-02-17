@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Template PH">
+<meta name="theme-color" content="#4A6741">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Template Social — Psiche Holos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --verde:#4A6741; --verde2:#6B8E5B; --verde-bg:#F7F4EC; --verde-sage:#C5D4BF; --verde-pale:#E8F0E4;
+  --lilla-dk:#48365A; --lilla:#654E78; --lilla2:#8E76A4; --lilla-lav:#D8CEE4; --lilla-pale:#E8E1F0; --lilla-bg:#F5F0F8;
+  --text:#3D3D3D; --gray:#888; --border:#E5E5E5; --bg:#F5F5F5;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Montserrat','Segoe UI',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+input,textarea{font-family:inherit;-webkit-appearance:none;border-radius:0;}
+
+/* ═══ SCREENS ═══ */
+.screen{position:absolute;top:0;left:0;width:100%;min-height:100vh;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;will-change:transform;}
+.screen.hidden-right{transform:translateX(100%);opacity:0;pointer-events:none;}
+.screen.hidden-left{transform:translateX(-30%);opacity:.5;pointer-events:none;}
+.screen.active{transform:translateX(0);opacity:1;}
+
+/* ═══ GALLERY SCREEN ═══ */
+.gal-header{
+  background:linear-gradient(135deg,var(--verde),var(--lilla-dk));
+  padding:calc(env(safe-area-inset-top,20px) + 12px) 20px 18px;color:#fff;
+}
+.gal-header h1{font-size:18px;font-weight:600;}
+.gal-header p{font-size:11px;opacity:.7;margin-top:3px;}
+
+.profile-tabs{display:flex;gap:8px;padding:14px 16px 10px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+.ptab{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;background:#F0F0F0;color:#666;transition:.2s;}
+.ptab.on-studio{background:var(--verde);color:#fff;}
+.ptab.on-personale{background:var(--lilla);color:#fff;}
+
+.gal-section{padding:8px 16px 4px;}
+.gal-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;padding:6px 0;display:flex;align-items:center;gap:6px;}
+.gal-section-label .dot{width:8px;height:8px;border-radius:50%;}
+
+.gal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 16px 20px;}
+.gcard{
+  background:#fff;border-radius:14px;padding:14px;border:2px solid transparent;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);transition:.15s;text-align:center;
+}
+.gcard:active{transform:scale(.97);}
+.gcard .badge{
+  width:44px;height:44px;border-radius:10px;margin:0 auto 10px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;font-weight:700;
+}
+.gcard .badge.story{width:32px;height:52px;border-radius:8px;font-size:13px;}
+.gcard .gname{font-size:13px;font-weight:600;line-height:1.3;}
+.gcard .gdesc{font-size:10px;color:var(--gray);margin-top:2px;}
+
+/* ═══ EDITOR SCREEN ═══ */
+.ed-topbar{
+  display:flex;align-items:center;gap:12px;
+  padding:calc(env(safe-area-inset-top,20px) + 8px) 16px 12px;
+  background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;
+}
+.btn-back{
+  width:36px;height:36px;border-radius:50%;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.btn-back svg{width:20px;height:20px;stroke:var(--text);stroke-width:2.5;fill:none;}
+.ed-topbar .info .name{font-size:14px;font-weight:600;}
+.ed-topbar .info .dim{font-size:11px;color:var(--gray);}
+
+.ed-body{padding:16px 16px calc(80px + var(--safe-b));}
+
+.preview-mobile{
+  border-radius:12px;overflow:hidden;margin-bottom:20px;
+  box-shadow:0 4px 20px rgba(0,0,0,.1);
+}
+.preview-mobile canvas{display:block;width:100%;height:auto;}
+
+.field-m{margin-bottom:14px;}
+.field-m label{display:block;font-size:11px;font-weight:500;color:var(--gray);margin-bottom:4px;}
+.field-m input,.field-m textarea{
+  width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--border);
+  font-size:15px;background:#fff;outline:none;transition:border .2s;
+}
+.field-m textarea{resize:vertical;}
+.field-m input:focus,.field-m textarea:focus{border-color:var(--accent,var(--verde));}
+
+.sticky-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  padding:12px 16px calc(12px + var(--safe-b));
+  background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--border);z-index:20;
+  display:none;
+}
+.sticky-bar.show{display:flex;gap:10px;}
+.btn-dl{
+  flex:1;padding:15px;border-radius:12px;color:#fff;font-size:15px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .15s;
+}
+.btn-dl:active{transform:scale(.97);}
+.btn-dl svg{width:18px;height:18px;}
+.btn-rst{
+  width:48px;height:48px;border-radius:12px;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;background:#fff;
+}
+.btn-rst svg{width:20px;height:20px;stroke:var(--gray);stroke-width:2;fill:none;}
+
+/* ═══ INSTALL BANNER ═══ */
+.install-banner{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;
+  padding:16px 20px calc(16px + var(--safe-b));
+  background:linear-gradient(135deg,var(--verde),var(--lilla-dk));color:#fff;
+  text-align:center;
+}
+.install-banner.show{display:block;}
+.install-banner p{font-size:13px;line-height:1.5;}
+.install-banner strong{font-weight:600;}
+.install-banner .close-banner{
+  position:absolute;top:8px;right:12px;color:#fff;opacity:.6;font-size:20px;
+  background:none;border:none;padding:8px;
+}
+
+/* ═══ DESKTOP LAYOUT ═══ */
+@media(min-width:768px){
+  .screen.hidden-right,.screen.hidden-left{transform:none;opacity:1;pointer-events:auto;}
+  .screen{position:relative;min-height:auto;}
+  body{display:grid;grid-template-columns:320px 1fr;height:100vh;overflow:hidden;}
+  #galleryScreen{overflow-y:auto;border-right:1px solid var(--border);}
+  #editorScreen{overflow-y:auto;}
+  .btn-back{display:none;}
+  .gal-grid{grid-template-columns:1fr;}
+  .sticky-bar{position:sticky;left:auto;right:auto;background:#fff;backdrop-filter:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  GALLERY SCREEN                        -->
+<!-- ═══════════════════════════════════════ -->
+<div class="screen active" id="galleryScreen">
+  <div class="gal-header">
+    <h1>Template Social</h1>
+    <p>Psiche Holos & Dott.ssa Ilenia Tagliaferro</p>
+  </div>
+  <div class="profile-tabs" id="tabs"></div>
+  <div id="gallery"></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  EDITOR SCREEN                         -->
+<!-- ═══════════════════════════════════════ -->
+<div class="screen hidden-right" id="editorScreen">
+  <div class="ed-topbar" id="edTopbar"></div>
+  <div class="ed-body" id="edBody">
+    <div class="preview-mobile"><canvas id="cv"></canvas></div>
+    <div id="fields"></div>
+  </div>
+  <div class="sticky-bar" id="stickyBar"></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  INSTALL BANNER (iOS)                  -->
+<!-- ═══════════════════════════════════════ -->
+<div class="install-banner" id="installBanner">
+  <button class="close-banner" onclick="closeBanner()">✕</button>
+  <p>Per usarla come app: tocca <strong>Condividi</strong> ↗ poi <strong>"Aggiungi a Home"</strong></p>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  PALETTES
+// ══════════════════════════════════════════
+const V={primary:"#4A6741",secondary:"#6B8E5B",bg:"#F7F4EC",sage:"#C5D4BF",white:"#FEFDFB",pale:"#E8F0E4",light:"#D8E6D2",text:"#3D3D3D"};
+const L={dark:"#48365A",primary:"#654E78",secondary:"#8E76A4",lavanda:"#D8CEE4",pale:"#E8E1F0",bg:"#F5F0F8",white:"#FCFAFE",text:"#3D3D3D"};
+
+// ══════════════════════════════════════════
+//  TEMPLATES
+// ══════════════════════════════════════════
+const T=[
+  {id:"A",name:"Copertina Carosello",p:"studio",a:"sq",d:"Prima slide",fields:[
+    {k:"title",l:"Titolo",d:"La prima seduta\npsicologica",t:"ta",r:2},{k:"subtitle",l:"Sottotitolo",d:"Cosa succede?"},{k:"slide",l:"N° slide",d:"1/8"}]},
+  {id:"B",name:"Slide Interna",p:"studio",a:"sq",d:"Slide 2-7",fields:[
+    {k:"title",l:"Titolo",d:"Non devi raccontare tutto"},{k:"body",l:"Corpo",d:"La prima seduta è uno spazio di conoscenza reciproca. Non c'è nessun obbligo di raccontare tutto subito.\n\nIl terapeuta ti accoglierà senza giudizio, ascoltando ciò che ti senti di condividere.",t:"ta",r:4},{k:"slide",l:"N° slide",d:"2/8"}]},
+  {id:"C",name:"Citazione",p:"studio",a:"sq",d:"Frase / riflessione",fields:[
+    {k:"quote",l:"Citazione",d:"Chiedere aiuto\nnon è debolezza.\nÈ consapevolezza.",t:"ta",r:3},{k:"author",l:"Autore",d:"Studio Psiche Holos"}]},
+  {id:"D",name:"Servizio",p:"studio",a:"sq",d:"Presentazione servizi",fields:[
+    {k:"title",l:"Titolo",d:"Percorsi di gruppo\nper adolescenti",t:"ta",r:2},{k:"p1",l:"Punto 1",d:"Gruppi di 4-6 ragazzi, dai 13 ai 17 anni"},{k:"p2",l:"Punto 2",d:"Incontri settimanali di 90 minuti"},{k:"p3",l:"Punto 3",d:"Condotti da due psicoterapeute"},{k:"p4",l:"Punto 4",d:"Ansia, autostima, relazioni tra pari"},{k:"cta",l:"Call to action",d:"Scrivici per informazioni e iscrizioni"}]},
+  {id:"MR",name:"Mito vs Realtà",p:"studio",a:"sq",d:"Format virale",fields:[
+    {k:"mito",l:"Mito",d:"Devo raccontare\ntutto subito.",t:"ta",r:2},{k:"realta",l:"Realtà",d:"Racconti ciò che\nti senti, con i\ntuoi tempi.",t:"ta",r:3}]},
+  {id:"G",name:"Story",p:"studio",a:"st",d:"Story 9:16",fields:[
+    {k:"badge",l:"Badge",d:"CONSIGLIO DELLA SETTIMANA"},{k:"title",l:"Titolo",d:"Ascolta per capire,\nnon per rispondere",t:"ta",r:2},{k:"body",l:"Corpo",d:"Quando qualcuno ti parla di un momento difficile, la cosa più importante è far sentire la tua presenza.\n\nNon serve avere tutte le risposte.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Salva questo consiglio ⬆️"}]},
+  {id:"E",name:"Copertina Carosello",p:"personale",a:"sq",d:"Prima slide personale",fields:[
+    {k:"title",l:"Titolo",d:"Perché gli\nadolescenti\nsi chiudono?",t:"ta",r:3},{k:"subtitle",l:"Sottotitolo",d:"5 cose che ogni genitore\ndovrebbe sapere",t:"ta",r:2},{k:"slide",l:"N° slide",d:"1/6"}]},
+  {id:"E2",name:"Slide Interna",p:"personale",a:"sq",d:"Slide interne",fields:[
+    {k:"title",l:"Titolo",d:"Non è colpa tua"},{k:"body",l:"Corpo",d:"L'adolescenza è un periodo di grande trasformazione. Il cervello sta ancora maturando, le emozioni sono intense.\n\nSe tuo figlio si chiude, non significa che hai sbagliato qualcosa.",t:"ta",r:4},{k:"slide",l:"N° slide",d:"2/6"}]},
+  {id:"F",name:"Frase / Tip",p:"personale",a:"sq",d:"Citazione personale",fields:[
+    {k:"quote",l:"Frase",d:"Non sei i tuoi pensieri.\nSei chi sceglie\ncome rispondere\na quei pensieri.",t:"ta",r:3}]},
+  {id:"H",name:"Story",p:"personale",a:"st",d:"Story 9:16 personale",fields:[
+    {k:"label",l:"Etichetta",d:"PILLOLA DI PSICOLOGIA"},{k:"title",l:"Titolo",d:"Tuo figlio\nnon ti parla più?",t:"ta",r:2},{k:"body",l:"Corpo",d:"Non significa che non ha bisogno di te.\n\nSignifica che sta cercando il suo modo di crescere.\n\nIl tuo compito è restare presente, anche nel silenzio.",t:"ta",r:5},{k:"cta",l:"Call to action",d:"Scorri per saperne di più ➡️"}]},
+];
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let sel=null, vals={}, filter="all";
+const gt=()=>T.find(t=>t.id===sel);
+const gv=(k)=>{const t=gt();return vals[k]??t?.fields.find(f=>f.k===k)?.d??""};
+const hex2=a=>Math.round(a*255).toString(16).padStart(2,"0");
+
+// ══════════════════════════════════════════
+//  CANVAS RENDERER (identical to desktop)
+// ══════════════════════════════════════════
+function draw(){
+  const cv=document.getElementById("cv");const t=gt();if(!cv||!t)return;
+  const isS=t.a==="st",W=1080,H=isS?1920:1080;
+  cv.width=W;cv.height=H;const c=cv.getContext("2d");
+  const studio=t.p==="studio",P=studio?V:L;
+
+  const fill=col=>{c.fillStyle=col;c.fillRect(0,0,W,H)};
+  const grad=(a,b)=>{const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.fillRect(0,0,W,H)};
+  const blob=(cx,cy,r,col,al=.15)=>{for(let i=0;i<6;i++){const ox=Math.sin(i*47+cx)*r*.3,oy=Math.cos(i*31+cy)*r*.3,s=r+Math.sin(i*19)*r*.3;const g=c.createRadialGradient(cx+ox,cy+oy,0,cx+ox,cy+oy,s);g.addColorStop(0,col+hex2(al));g.addColorStop(1,col+"00");c.fillStyle=g;c.fillRect(cx+ox-s,cy+oy-s,s*2,s*2)}};
+  const drawLeaf=(x,y,sz,ang,col)=>{c.save();c.translate(x,y);c.rotate(ang*Math.PI/180);c.beginPath();c.moveTo(0,-sz);c.bezierCurveTo(sz*.6,-sz*.6,sz*.6,sz*.6,0,sz);c.bezierCurveTo(-sz*.6,sz*.6,-sz*.6,-sz*.6,0,-sz);c.fillStyle=col;c.globalAlpha=.4;c.fill();c.beginPath();c.moveTo(0,-sz*.8);c.lineTo(0,sz*.8);c.strokeStyle=col;c.globalAlpha=.25;c.lineWidth=1;c.stroke();c.globalAlpha=1;c.restore()};
+  const branch=(sx,sy,ang,len,n=5)=>{const c1=studio?V.primary:L.primary,c2=studio?V.secondary:L.secondary;const ex=sx+len*Math.cos(ang*Math.PI/180),ey=sy+len*Math.sin(ang*Math.PI/180);c.beginPath();c.moveTo(sx,sy);c.lineTo(ex,ey);c.strokeStyle=c2+"60";c.lineWidth=1.5;c.stroke();for(let i=0;i<n;i++){const tt=(i+1)/(n+1);drawLeaf(sx+(ex-sx)*tt,sy+(ey-sy)*tt,12+Math.sin(i*7)*5,ang+(i%2===0?40:-40),i%2===0?c1:c2)}};
+  const corner=(pos,sc=1)=>{if(pos==="tr")for(let i=0;i<4;i++)branch(W-30-i*40,20+i*30,200+i*15,110*sc,5);if(pos==="bl")for(let i=0;i<4;i++)branch(30+i*40,H-20-i*30,20-i*15,110*sc,5);if(pos==="tl")for(let i=0;i<3;i++)branch(30+i*35,20+i*25,-20+i*10,90*sc,4)};
+  const sf=(w,s,fam="serif")=>{c.font=`${w} ${s}px ${fam==="serif"?"'Playfair Display',Georgia,serif":"'Montserrat','Segoe UI',sans-serif"}`};
+  const ct=(txt,y,o={})=>{const{w="bold",s=42,f="serif",col=P.primary,lh=1.35}=o;sf(w,s,f);c.fillStyle=col;c.textAlign="center";let cy=y;txt.split("\n").forEach(ln=>{c.fillText(ln,W/2,cy);cy+=s*lh});return cy};
+  const lt=(txt,x,y,o={})=>{const{w="normal",s=24,f="sans",col=P.text,lh=1.5,mw=880}=o;sf(w,s,f);c.fillStyle=col;c.textAlign="left";let cy=y;txt.split("\n").forEach(p=>{if(!p.trim()){cy+=s*.8;return}let ln="";p.split(" ").forEach(wd=>{const test=ln?ln+" "+wd:wd;if(c.measureText(test).width>mw){c.fillText(ln,x,cy);cy+=s*lh;ln=wd}else ln=test});if(ln){c.fillText(ln,x,cy);cy+=s*lh}});return cy};
+  const sep=(y,col=P.primary,pct=.35)=>{const lw=W*pct;c.beginPath();c.moveTo((W-lw)/2,y);c.lineTo((W+lw)/2,y);c.strokeStyle=col;c.lineWidth=3;c.stroke()};
+  const rr=(x,y,w,h,r,fl,st)=>{c.beginPath();c.roundRect(x,y,w,h,r);if(fl){c.fillStyle=fl;c.fill()}if(st){c.strokeStyle=st;c.lineWidth=2;c.stroke()}};
+  const v=gv;
+
+  switch(t.id){
+    case"A":fill(V.bg);blob(200,200,280,V.light);blob(800,150,240,V.sage);blob(500,800,320,V.light);blob(100,700,200,V.sage);corner("tr",1.2);corner("bl",1.2);var yy=ct(v("title"),380,{s:58,col:V.primary});sep(yy+5,V.primary);ct(v("subtitle"),yy+40,{w:"500",s:32,f:"sans",col:V.secondary});ct("PSICHE HOLOS",H-50,{w:"500",s:16,f:"sans",col:V.primary+"B0"});sf("300",16,"sans");c.fillStyle=V.secondary;c.textAlign="right";c.fillText(v("slide"),W-35,35);break;
+    case"B":fill(V.white);corner("tr",.5);c.fillStyle=V.primary;c.fillRect(0,0,W,6);sf("bold",30,"sans");c.fillStyle=V.primary;c.textAlign="left";c.fillText(v("title"),70,90);sep(120,V.secondary+"90",.4);lt(v("body"),70,175);sf("300",16,"sans");c.fillStyle=V.secondary;c.textAlign="right";c.fillText(v("slide"),W-40,H-35);break;
+    case"C":fill(V.sage);blob(300,300,250,V.light);blob(700,700,280,V.bg);blob(150,800,200,V.pale);corner("tr");corner("bl");corner("tl",.6);sf("bold",110,"serif");c.fillStyle=V.primary+"70";c.textAlign="left";c.fillText("\u201C",100,340);ct(v("quote"),400,{w:"italic bold",s:34,col:V.primary});sf("bold",110,"serif");c.fillStyle=V.primary+"70";c.textAlign="right";c.fillText("\u201D",980,630);ct("\u2014  "+v("author"),720,{w:"normal",s:20,f:"sans",col:V.text});ct("PSICHE HOLOS",H-50,{w:"500",s:16,f:"sans",col:V.primary+"B0"});break;
+    case"D":fill(V.bg);c.fillStyle=V.sage;c.fillRect(0,0,W,380);blob(200,150,180,V.light);blob(800,200,150,V.bg);corner("tr",.7);corner("tl",.4);ct(v("title"),160,{s:38,col:"#FFFFFF"});c.fillStyle=V.primary;c.fillRect(0,378,W,4);var py=440;[v("p1"),v("p2"),v("p3"),v("p4")].filter(Boolean).forEach(pt=>{c.beginPath();c.arc(85,py+12,9,0,Math.PI*2);c.fillStyle=V.secondary;c.fill();lt(pt,115,py,{s:22});py+=80});ct(v("cta"),880,{w:"500",s:19,f:"sans",col:V.secondary});ct("PSICHE HOLOS",H-50,{w:"500",s:16,f:"sans",col:V.primary+"B0"});break;
+    case"MR":fill(V.bg);blob(200,200,280,V.light);blob(800,150,240,V.sage);blob(500,800,320,V.light);corner("tr",.7);corner("bl",.7);ct("Mito vs Realtà",130,{s:34,col:V.primary});sep(165,V.primary,.25);rr(80,230,920,200,15,V.pale+"CC",V.secondary+"60");sf("bold",22,"sans");c.fillStyle=V.secondary;c.textAlign="left";c.fillText("MITO",120,268);ct("\u201C"+v("mito")+"\u201D",295,{w:"italic bold",s:26,col:V.text,lh:1.3});ct("\u2193",470,{w:"bold",s:34,f:"sans",col:V.secondary});rr(80,520,920,230,15,V.sage+"BB",V.primary+"60");sf("bold",22,"sans");c.fillStyle=V.primary;c.textAlign="left";c.fillText("REALTÀ",120,558);ct("\u201C"+v("realta")+"\u201D",580,{s:26,col:V.primary,lh:1.3});ct("PSICHE HOLOS",H-50,{w:"500",s:16,f:"sans",col:V.primary+"B0"});break;
+    case"G":fill(V.bg);blob(200,200,280,V.light);blob(800,150,240,V.sage);blob(500,800,320,V.light);blob(540,1400,300,V.light);blob(200,1600,250,V.sage);corner("tr",1.2);corner("bl",1.2);rr(300,200,480,55,28,V.primary);ct(v("badge"),238,{w:"500",s:20,f:"sans",col:"#FFFFFF"});ct(v("title"),500,{s:44,col:V.primary});sep(720,V.secondary,.3);lt(v("body"),120,800,{s:24,mw:840});ct(v("cta"),1480,{w:"500",s:20,f:"sans",col:V.secondary});ct("PSICHE HOLOS",H-110,{w:"500",s:18,f:"sans",col:V.primary});ct("Studio di psicologia e psicoterapia \u2022 Brescia",H-80,{w:"300",s:13,f:"sans",col:V.secondary});break;
+    case"E":grad(L.dark,"#2D1F3A");blob(540,540,380,L.secondary);blob(200,800,250,L.lavanda);blob(850,200,200,L.secondary);corner("tr",.9);corner("bl",.7);ct(v("title"),330,{s:48,f:"sans",col:"#FFFFFF"});sep(570,"#DCD4E6",.25);ct(v("subtitle"),610,{w:"normal",s:23,f:"sans",col:"#DCD4E6"});ct("Dott.ssa Ilenia Tagliaferro \u2014 Psicoterapeuta CBT",930,{w:"300",s:17,f:"sans",col:"#C8BED8"});sf("300",16,"sans");c.fillStyle="#C8BED8";c.textAlign="right";c.fillText(v("slide"),W-35,35);break;
+    case"E2":fill(L.bg);blob(800,200,200,L.lavanda);blob(200,800,180,L.pale);corner("tr",.4);c.fillStyle=L.primary;c.fillRect(0,0,W,6);sf("bold",30,"sans");c.fillStyle=L.primary;c.textAlign="left";c.fillText(v("title"),70,90);sep(120,L.secondary+"90",.35);lt(v("body"),70,175);sf("300",16,"sans");c.fillStyle=L.secondary;c.textAlign="right";c.fillText(v("slide"),W-40,H-35);break;
+    case"F":grad(L.bg,L.pale);blob(540,400,280,L.lavanda);blob(200,700,200,L.pale);blob(800,600,180,L.lavanda);ct(v("quote"),340,{s:36,col:L.dark});sep(670,L.secondary,.2);ct("\u2014 Dott.ssa Ilenia Tagliaferro",710,{w:"300",s:19,f:"sans",col:L.text});ct("Psicoterapeuta CBT",748,{w:"300",s:15,f:"sans",col:L.secondary});break;
+    case"H":grad(L.dark,"#1E1228");blob(540,600,380,L.secondary);blob(200,1200,280,L.lavanda);blob(800,400,230,L.primary);corner("tr",.7);corner("bl",.6);ct(v("label"),210,{w:"300",s:17,f:"sans",col:"#D2C8E0"});sep(240,"#D2C8E0",.15);ct(v("title"),430,{s:48,col:"#FFFFFF"});lt(v("body"),120,720,{s:26,col:"#DCD4EC",mw:840});rr(250,1390,580,65,33,"rgba(255,255,255,0.1)");ct(v("cta"),1433,{w:"500",s:22,f:"sans",col:"#FFFFFF"});ct("Dott.ssa Ilenia Tagliaferro",1730,{w:"300",s:17,f:"sans",col:"#D2C8E0"});ct("Psicoterapeuta CBT \u2022 Brescia",1765,{w:"300",s:13,f:"sans",col:"#AAA0BD"});break;
+  }
+}
+
+// ══════════════════════════════════════════
+//  UI
+// ══════════════════════════════════════════
+function buildGallery(){
+  // Tabs
+  const tabs=document.getElementById("tabs");
+  tabs.innerHTML="";
+  [["all","Tutti"],["studio","Studio"],["personale","Personale"]].forEach(([k,l])=>{
+    const b=document.createElement("button");
+    b.className="ptab"+(filter===k?" on-"+k:"");
+    b.textContent=l;
+    b.onclick=()=>{filter=k;buildGallery()};
+    tabs.appendChild(b);
+  });
+
+  const g=document.getElementById("gallery");g.innerHTML="";
+  const groups=filter==="all"?["studio","personale"]:[filter];
+  
+  groups.forEach(prof=>{
+    const sec=document.createElement("div");sec.className="gal-section";
+    const color=prof==="studio"?"var(--verde)":"var(--lilla)";
+    const label=prof==="studio"?"@psicheholos — Verde":"@dott.ssa_ileniatagliaferro — Lilla";
+    sec.innerHTML=`<div class="gal-section-label" style="color:${color}"><span class="dot" style="background:${color}"></span>${label}</div>`;
+    g.appendChild(sec);
+
+    const grid=document.createElement("div");grid.className="gal-grid";
+    T.filter(t=>t.p===prof).forEach(t=>{
+      const card=document.createElement("button");card.className="gcard";
+      const col=prof==="studio"?V.primary:L.primary;
+      const isSt=t.a==="st";
+      card.innerHTML=`<div class="badge${isSt?" story":""}" style="background:${col}">${t.id}</div><div class="gname">${t.name}</div><div class="gdesc">${t.d}</div>`;
+      card.onclick=()=>openEditor(t.id);
+      grid.appendChild(card);
+    });
+    g.appendChild(grid);
+  });
+}
+
+function openEditor(id){
+  sel=id;vals={};
+  const t=gt();
+  const studio=t.p==="studio";
+  const accent=studio?V.primary:L.primary;
+  const accent2=studio?V.secondary:L.secondary;
+  const profLabel=studio?"@psicheholos":"@dott.ssa_ileniatagliaferro";
+
+  // Topbar
+  document.getElementById("edTopbar").innerHTML=`
+    <button class="btn-back" onclick="closeEditor()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="info"><div class="name" style="color:${accent}">${t.name}</div><div class="dim">${profLabel} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div>`;
+
+  // Fields
+  const f=document.getElementById("fields");f.innerHTML="";
+  t.fields.forEach(field=>{
+    const div=document.createElement("div");div.className="field-m";
+    const lbl=document.createElement("label");lbl.textContent=field.l;div.appendChild(lbl);
+    const el=document.createElement(field.t==="ta"?"textarea":"input");
+    if(field.t==="ta")el.rows=field.r||3;
+    el.value=gv(field.k);
+    el.style.setProperty("--accent",accent);
+    el.oninput=()=>{vals[field.k]=el.value;draw()};
+    el.onfocus=()=>el.style.borderColor=accent;
+    el.onblur=()=>el.style.borderColor="var(--border)";
+    div.appendChild(el);f.appendChild(div);
+  });
+
+  // Sticky bar
+  const bar=document.getElementById("stickyBar");
+  bar.className="sticky-bar show";
+  bar.innerHTML=`
+    <button class="btn-dl" style="background:linear-gradient(135deg,${accent},${accent2})" onclick="exportPNG()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Scarica PNG
+    </button>
+    <button class="btn-rst" onclick="resetFields()"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg></button>`;
+
+  // Animate screens
+  document.getElementById("galleryScreen").className="screen hidden-left";
+  document.getElementById("editorScreen").className="screen active";
+  document.getElementById("editorScreen").scrollTop=0;
+
+  // Draw after fonts ready
+  requestAnimationFrame(()=>requestAnimationFrame(draw));
+}
+
+function closeEditor(){
+  sel=null;
+  document.getElementById("galleryScreen").className="screen active";
+  document.getElementById("editorScreen").className="screen hidden-right";
+  document.getElementById("stickyBar").className="sticky-bar";
+}
+
+function resetFields(){vals={};openEditor(sel);}
+
+function exportPNG(){
+  draw();
+  const cv=document.getElementById("cv");
+  const t=gt();
+
+  // iOS Safari: open image in new tab (can't auto-download)
+  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  if(isIOS){
+    cv.toBlob(blob=>{
+      const url=URL.createObjectURL(blob);
+      // Try share API first
+      if(navigator.share&&navigator.canShare){
+        const file=new File([blob],`${t.p}_${t.id}.png`,{type:"image/png"});
+        if(navigator.canShare({files:[file]})){
+          navigator.share({files:[file],title:"Template Social"}).catch(()=>{
+            window.open(url,"_blank");
+          });
+          return;
+        }
+      }
+      window.open(url,"_blank");
+    },"image/png");
+  } else {
+    const a=document.createElement("a");
+    a.download=`${t.p}_${t.id}_${new Date().toISOString().slice(0,10)}.png`;
+    a.href=cv.toDataURL("image/png");
+    a.click();
+  }
+}
+
+// ══════════════════════════════════════════
+//  INSTALL BANNER (only iOS Safari)
+// ══════════════════════════════════════════
+function checkInstallBanner(){
+  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  const isStandalone=window.navigator.standalone===true;
+  const dismissed=localStorage.getItem("banner_dismissed");
+  if(isIOS&&!isStandalone&&!dismissed){
+    document.getElementById("installBanner").className="install-banner show";
+  }
+}
+function closeBanner(){
+  document.getElementById("installBanner").className="install-banner";
+  localStorage.setItem("banner_dismissed","1");
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+document.fonts.ready.then(()=>{buildGallery();checkInstallBanner()});
+setTimeout(()=>{buildGallery();checkInstallBanner()},2000);
+
+// Register Service Worker
+if("serviceWorker"in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+</script>
+</body>
+</html>
