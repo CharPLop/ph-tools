@@ -44,7 +44,12 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 .gal-hdr p{font-size:11px;opacity:.7;margin-top:3px}
 .ptabs{display:flex;gap:8px;padding:14px 16px 10px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
 .ptab{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;background:#F0F0F0;color:#666;transition:.2s}
-.ptab.on-s{background:var(--verde);color:#fff}.ptab.on-p{background:var(--lilla);color:#fff}.ptab.on-a{background:#333;color:#fff}
+.ptab.on-s{background:var(--verde);color:#fff}.ptab.on-p{background:var(--lilla);color:#fff}
+.profilo-toggle{display:flex;align-items:center;gap:8px;padding:12px 0;margin-bottom:10px}
+.profilo-toggle label{font-size:11px;font-weight:500;color:var(--gray)}
+.profilo-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:600;background:#F0F0F0;color:#666;transition:.2s;text-align:center}
+.profilo-btn.act-s{background:var(--verde);color:#fff}
+.profilo-btn.act-p{background:var(--lilla);color:#fff}
 .gs{padding:8px 16px 4px}
 .gsl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;padding:6px 0;display:flex;align-items:center;gap:6px}
 .gsl .dt{width:8px;height:8px;border-radius:50%}
@@ -89,7 +94,7 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 @media(min-width:768px){
   .screen.hr,.screen.hl{transform:none;opacity:1;pointer-events:auto}
   .screen{position:relative;min-height:auto}
-  #app{display:grid;grid-template-columns:240px 1fr 340px;height:100vh;overflow:hidden}
+  #app{display:grid;grid-template-columns:340px 1fr 340px;height:100vh;overflow:hidden}
   #galS{overflow-y:auto;border-right:1px solid var(--border)}
   #edS{overflow-y:hidden;display:flex;align-items:center;justify-content:center;background:#EBEBEB}
   .etb{display:none}
@@ -183,35 +188,27 @@ const V={primary:"#4A6741",secondary:"#6B8E5B",bg:"#F7F4EC",sage:"#C5D4BF",white
 const L={dark:"#48365A",primary:"#654E78",secondary:"#8E76A4",lavanda:"#D8CEE4",pale:"#E8E1F0",bg:"#F5F0F8",white:"#FCFAFE",text:"#3D3D3D"};
 
 // ══════════════════════════════════════
-//  TEMPLATES
+//  TEMPLATES (unified — profilo switch changes colors)
 // ══════════════════════════════════════
 const T=[
-  {id:"A",name:"Copertina Carosello",p:"studio",a:"sq",d:"Prima slide",fields:[
-    {k:"title",l:"Titolo",d:"La prima seduta\npsicologica",t:"ta",r:2},{k:"subtitle",l:"Sottotitolo",d:"Cosa succede?"},{k:"slide",l:"N° slide",d:"1/8"}]},
-  {id:"B",name:"Slide Interna",p:"studio",a:"sq",d:"Slide 2-7",fields:[
+  {id:"A",name:"Copertina Carosello",a:"sq",d:"Prima slide",fields:[
+    {k:"title",l:"Titolo",d:"La prima seduta\npsicologica",t:"ta",r:2},{k:"subtitle",l:"Sottotitolo",d:"Cosa succede?"},{k:"slide",l:"N° slide",d:"1/8"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro — Psicoterapeuta CBT",pOnly:true}]},
+  {id:"B",name:"Slide Interna",a:"sq",d:"Slide contenuto",fields:[
     {k:"title",l:"Titolo",d:"Non devi raccontare tutto"},{k:"body",l:"Corpo",d:"La prima seduta è uno spazio di conoscenza reciproca. Non c'è nessun obbligo di raccontare tutto subito.\n\nIl terapeuta ti accoglierà senza giudizio, ascoltando ciò che ti senti di condividere.",t:"ta",r:4},{k:"slide",l:"N° slide",d:"2/8"}]},
-  {id:"C",name:"Citazione",p:"studio",a:"sq",d:"Frase / riflessione",fields:[
-    {k:"quote",l:"Citazione",d:"Chiedere aiuto\nnon è debolezza.\nÈ consapevolezza.",t:"ta",r:3},{k:"author",l:"Autore",d:"Studio Psiche Holos"}]},
-  {id:"D",name:"Servizio",p:"studio",a:"sq",d:"Presentazione servizi",fields:[
+  {id:"C",name:"Citazione / Frase",a:"sq",d:"Frase o riflessione",fields:[
+    {k:"quote",l:"Citazione",d:"Chiedere aiuto\nnon è debolezza.\nÈ consapevolezza.",t:"ta",r:3},{k:"author",l:"Autore (Studio)",d:"Studio Psiche Holos",sOnly:true},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",pOnly:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT",pOnly:true}]},
+  {id:"D",name:"Servizio",a:"sq",d:"Presentazione servizi",fields:[
     {k:"title",l:"Titolo",d:"Percorsi di gruppo\nper adolescenti",t:"ta",r:2},{k:"p1",l:"Punto 1",d:"Gruppi di 4-6 ragazzi, dai 13 ai 17 anni"},{k:"p2",l:"Punto 2",d:"Incontri settimanali di 90 minuti"},{k:"p3",l:"Punto 3",d:"Condotti da due psicoterapeute"},{k:"p4",l:"Punto 4",d:"Ansia, autostima, relazioni tra pari"},{k:"cta",l:"Call to action",d:"Scrivici per informazioni e iscrizioni"}]},
-  {id:"MR",name:"Mito vs Realtà",p:"studio",a:"sq",d:"Format virale",fields:[
+  {id:"MR",name:"Mito vs Realtà",a:"sq",d:"Format virale",fields:[
     {k:"mito",l:"Mito",d:"Devo raccontare\ntutto subito.",t:"ta",r:2},{k:"realta",l:"Realtà",d:"Racconti ciò che\nti senti, con i\ntuoi tempi.",t:"ta",r:3}]},
-  {id:"G",name:"Story",p:"studio",a:"st",d:"Story 9:16",fields:[
-    {k:"badge",l:"Badge",d:"CONSIGLIO DELLA SETTIMANA"},{k:"title",l:"Titolo",d:"Ascolta per capire,\nnon per rispondere",t:"ta",r:2},{k:"body",l:"Corpo",d:"Quando qualcuno ti parla di un momento difficile, la cosa più importante è far sentire la tua presenza.\n\nNon serve avere tutte le risposte.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Salva questo consiglio ⬆️"}]},
-  {id:"E",name:"Copertina Carosello",p:"personale",a:"sq",d:"Prima slide personale",fields:[
-    {k:"title",l:"Titolo",d:"Perché gli\nadolescenti\nsi chiudono?",t:"ta",r:3},{k:"subtitle",l:"Sottotitolo",d:"5 cose che ogni genitore\ndovrebbe sapere",t:"ta",r:2},{k:"slide",l:"N° slide",d:"1/6"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro — Psicoterapeuta CBT"}]},
-  {id:"E2",name:"Slide Interna",p:"personale",a:"sq",d:"Slide interne",fields:[
-    {k:"title",l:"Titolo",d:"Non è colpa tua"},{k:"body",l:"Corpo",d:"L'adolescenza è un periodo di grande trasformazione. Il cervello sta ancora maturando, le emozioni sono intense.\n\nSe tuo figlio si chiude, non significa che hai sbagliato qualcosa.",t:"ta",r:4},{k:"slide",l:"N° slide",d:"2/6"}]},
-  {id:"F",name:"Frase / Tip",p:"personale",a:"sq",d:"Citazione personale",fields:[
-    {k:"quote",l:"Frase",d:"Non sei i tuoi pensieri.\nSei chi sceglie\ncome rispondere\na quei pensieri.",t:"ta",r:3},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro"},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT"}]},
-  {id:"H",name:"Story",p:"personale",a:"st",d:"Story 9:16 personale",fields:[
-    {k:"label",l:"Etichetta",d:"PILLOLA DI PSICOLOGIA"},{k:"title",l:"Titolo",d:"Tuo figlio\nnon ti parla più?",t:"ta",r:2},{k:"body",l:"Corpo",d:"Non significa che non ha bisogno di te.\n\nSignifica che sta cercando il suo modo di crescere.\n\nIl tuo compito è restare presente, anche nel silenzio.",t:"ta",r:5},{k:"cta",l:"Call to action",d:"Scorri per saperne di più ➡️"},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro"},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT • Brescia"}]},
+  {id:"G",name:"Story",a:"st",d:"Story 9:16",fields:[
+    {k:"badge",l:"Badge",d:"CONSIGLIO DELLA SETTIMANA"},{k:"title",l:"Titolo",d:"Ascolta per capire,\nnon per rispondere",t:"ta",r:2},{k:"body",l:"Corpo",d:"Quando qualcuno ti parla di un momento difficile, la cosa più importante è far sentire la tua presenza.\n\nNon serve avere tutte le risposte.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Salva questo consiglio ⬆️"},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",pOnly:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT • Brescia",pOnly:true}]},
 ];
 
 // ══════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════
-let sel=null,vals={},filter="all";
+let sel=null,vals={},profilo="studio";
 const gt=()=>T.find(t=>t.id===sel);
 const gv=k=>{const t=gt();return vals[k]??t?.fields.find(f=>f.k===k)?.d??""};
 const hx=a=>Math.round(a*255).toString(16).padStart(2,"0");
@@ -233,14 +230,14 @@ function draw(){
   const cv=document.getElementById("cv");const t=gt();if(!cv||!t)return;
   const isS=t.a==="st",W=1080,H=isS?1920:1080;
   cv.width=W;cv.height=H;const c=cv.getContext("2d");
-  const studio=t.p==="studio",P=studio?V:L;
+  const studio=profilo==="studio",P=studio?V:L;
   const LOGO_H=80, LOGO_H_ST=90;
 
   const fill=col=>{c.fillStyle=col;c.fillRect(0,0,W,H)};
   const grad=(a,b)=>{const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.fillRect(0,0,W,H)};
   const blob=(cx,cy,r,col,al=.15)=>{for(let i=0;i<6;i++){const ox=Math.sin(i*47+cx)*r*.3,oy=Math.cos(i*31+cy)*r*.3,s=r+Math.sin(i*19)*r*.3;const g=c.createRadialGradient(cx+ox,cy+oy,0,cx+ox,cy+oy,s);g.addColorStop(0,col+hx(al));g.addColorStop(1,col+"00");c.fillStyle=g;c.fillRect(cx+ox-s,cy+oy-s,s*2,s*2)}};
   const drawLeaf=(x,y,sz,ang,col)=>{c.save();c.translate(x,y);c.rotate(ang*Math.PI/180);c.beginPath();c.moveTo(0,-sz);c.bezierCurveTo(sz*.6,-sz*.6,sz*.6,sz*.6,0,sz);c.bezierCurveTo(-sz*.6,sz*.6,-sz*.6,-sz*.6,0,-sz);c.fillStyle=col;c.globalAlpha=.4;c.fill();c.beginPath();c.moveTo(0,-sz*.8);c.lineTo(0,sz*.8);c.strokeStyle=col;c.globalAlpha=.25;c.lineWidth=1;c.stroke();c.globalAlpha=1;c.restore()};
-  const branch=(sx,sy,ang,len,n=5)=>{const c1=studio?V.primary:L.primary,c2=studio?V.secondary:L.secondary;const ex=sx+len*Math.cos(ang*Math.PI/180),ey=sy+len*Math.sin(ang*Math.PI/180);c.beginPath();c.moveTo(sx,sy);c.lineTo(ex,ey);c.strokeStyle=c2+"60";c.lineWidth=1.5;c.stroke();for(let i=0;i<n;i++){const tt=(i+1)/(n+1);drawLeaf(sx+(ex-sx)*tt,sy+(ey-sy)*tt,12+Math.sin(i*7)*5,ang+(i%2===0?40:-40),i%2===0?c1:c2)}};
+  const branch=(sx,sy,ang,len,n=5)=>{const c1=P.primary,c2=P.secondary;const ex=sx+len*Math.cos(ang*Math.PI/180),ey=sy+len*Math.sin(ang*Math.PI/180);c.beginPath();c.moveTo(sx,sy);c.lineTo(ex,ey);c.strokeStyle=c2+"60";c.lineWidth=1.5;c.stroke();for(let i=0;i<n;i++){const tt=(i+1)/(n+1);drawLeaf(sx+(ex-sx)*tt,sy+(ey-sy)*tt,12+Math.sin(i*7)*5,ang+(i%2===0?40:-40),i%2===0?c1:c2)}};
   const corner=(pos,sc=1)=>{if(pos==="tr")for(let i=0;i<4;i++)branch(W-30-i*40,20+i*30,200+i*15,110*sc,5);if(pos==="bl")for(let i=0;i<4;i++)branch(30+i*40,H-20-i*30,20-i*15,110*sc,5);if(pos==="tl")for(let i=0;i<3;i++)branch(30+i*35,20+i*25,-20+i*10,90*sc,4)};
   const sf=(w,s,fam="serif")=>{c.font=`${w} ${s}px ${fam==="serif"?"'Playfair Display',Georgia,serif":"'Montserrat','Segoe UI',sans-serif"}`};
   const ct=(txt,y,o={})=>{const{w="bold",s=42,f="serif",col=P.primary,lh=1.35,mw=920}=o;sf(w,s,f);c.fillStyle=col;c.textAlign="center";let cy=y;txt.split("\n").forEach(para=>{if(!para.trim()){cy+=s*.5;return}let ln="";para.split(" ").forEach(wd=>{const test=ln?ln+" "+wd:wd;if(c.measureText(test).width>mw){c.fillText(ln,W/2,cy);cy+=s*lh;ln=wd}else ln=test});if(ln){c.fillText(ln,W/2,cy);cy+=s*lh}});return cy};
@@ -249,20 +246,104 @@ function draw(){
   const rr=(x,y,w,h,r,fl,st)=>{c.beginPath();c.roundRect(x,y,w,h,r);if(fl){c.fillStyle=fl;c.fill()}if(st){c.strokeStyle=st;c.lineWidth=2;c.stroke()}};
   const v=gv;
 
-  // Draw logo centered at bottom for studio templates
+  // Bottom branding: logo for studio, firma text for personale
   const logo=(yPos,h)=>drawLogo(c,W/2,yPos,h||LOGO_H);
+  const bottomBrand=(yPos,h)=>{
+    if(studio){logo(yPos,h)}
+    else{ct(v("firma")||"",yPos-8,{w:"300",s:17,f:"sans",col:P.secondary})}
+  };
+
+  // Bg helpers
+  const bgLight=()=>{fill(P.bg||P.white);blob(200,200,280,studio?V.light:L.lavanda);blob(800,150,240,studio?V.sage:L.pale);blob(500,800,320,studio?V.light:L.lavanda);blob(100,700,200,studio?V.sage:L.pale)};
+  const bgDark=()=>{grad(studio?V.primary:L.dark,studio?"#2A3D24":"#2D1F3A");blob(540,540,380,P.secondary);blob(200,800,250,studio?V.sage:L.lavanda);blob(850,200,200,P.secondary)};
 
   switch(t.id){
-    case"A":fill(V.bg);blob(200,200,280,V.light);blob(800,150,240,V.sage);blob(500,800,320,V.light);blob(100,700,200,V.sage);corner("tr",1.2);corner("bl",1.2);var yy=ct(v("title"),380,{s:58,col:V.primary});sep(yy+5,V.primary);ct(v("subtitle"),yy+40,{w:"500",s:32,f:"sans",col:V.secondary});logo(H-52);sf("300",16,"sans");c.fillStyle=V.secondary;c.textAlign="right";c.fillText(v("slide"),W-35,35);break;
-    case"B":fill(V.white);corner("tr",.5);c.fillStyle=V.primary;c.fillRect(0,0,W,6);sf("bold",30,"sans");c.fillStyle=V.primary;c.textAlign="left";c.fillText(v("title"),70,90);sep(120,V.secondary+"90",.4);lt(v("body"),70,175);sf("300",16,"sans");c.fillStyle=V.secondary;c.textAlign="right";c.fillText(v("slide"),W-40,H-35);break;
-    case"C":fill(V.sage);blob(300,300,250,V.light);blob(700,700,280,V.bg);blob(150,800,200,V.pale);corner("tr");corner("bl");corner("tl",.6);sf("bold",110,"serif");c.fillStyle=V.primary+"70";c.textAlign="left";c.fillText("\u201C",100,340);ct(v("quote"),400,{w:"italic bold",s:34,col:V.primary});sf("bold",110,"serif");c.fillStyle=V.primary+"70";c.textAlign="right";c.fillText("\u201D",980,630);ct("\u2014  "+v("author"),720,{w:"normal",s:20,f:"sans",col:V.text});logo(H-52);break;
-    case"D":fill(V.bg);c.fillStyle=V.sage;c.fillRect(0,0,W,380);blob(200,150,180,V.light);blob(800,200,150,V.bg);corner("tr",.7);corner("tl",.4);ct(v("title"),160,{s:38,col:"#FFFFFF"});c.fillStyle=V.primary;c.fillRect(0,378,W,4);var py=440;[v("p1"),v("p2"),v("p3"),v("p4")].filter(Boolean).forEach(pt=>{c.beginPath();c.arc(85,py+12,9,0,Math.PI*2);c.fillStyle=V.secondary;c.fill();lt(pt,115,py,{s:22});py+=80});ct(v("cta"),880,{w:"500",s:19,f:"sans",col:V.secondary});logo(H-52);break;
-    case"MR":fill(V.bg);blob(200,200,280,V.light);blob(800,150,240,V.sage);blob(500,800,320,V.light);corner("tr",.7);corner("bl",.7);ct("Mito vs Realtà",130,{s:34,col:V.primary});sep(165,V.primary,.25);rr(80,230,920,200,15,V.pale+"CC",V.secondary+"60");sf("bold",22,"sans");c.fillStyle=V.secondary;c.textAlign="left";c.fillText("MITO",120,268);ct("\u201C"+v("mito")+"\u201D",295,{w:"italic bold",s:26,col:V.text,lh:1.3});ct("\u2193",470,{w:"bold",s:34,f:"sans",col:V.secondary});rr(80,520,920,230,15,V.sage+"BB",V.primary+"60");sf("bold",22,"sans");c.fillStyle=V.primary;c.textAlign="left";c.fillText("REALTÀ",120,558);ct("\u201C"+v("realta")+"\u201D",580,{s:26,col:V.primary,lh:1.3});logo(H-52);break;
-    case"G":fill(V.bg);blob(200,200,280,V.light);blob(800,150,240,V.sage);blob(500,800,320,V.light);blob(540,1400,300,V.light);blob(200,1600,250,V.sage);corner("tr",1.2);corner("bl",1.2);rr(300,200,480,55,28,V.primary);ct(v("badge"),238,{w:"500",s:20,f:"sans",col:"#FFFFFF"});ct(v("title"),500,{s:44,col:V.primary});sep(720,V.secondary,.3);lt(v("body"),120,800,{s:24,mw:840});ct(v("cta"),1480,{w:"500",s:20,f:"sans",col:V.secondary});logo(H-100,LOGO_H_ST);break;
-    case"E":grad(L.dark,"#2D1F3A");blob(540,540,380,L.secondary);blob(200,800,250,L.lavanda);blob(850,200,200,L.secondary);corner("tr",.9);corner("bl",.7);ct(v("title"),330,{s:48,f:"sans",col:"#FFFFFF"});sep(570,"#DCD4E6",.25);ct(v("subtitle"),610,{w:"normal",s:23,f:"sans",col:"#DCD4E6"});ct(v("firma"),930,{w:"300",s:17,f:"sans",col:"#C8BED8"});sf("300",16,"sans");c.fillStyle="#C8BED8";c.textAlign="right";c.fillText(v("slide"),W-35,35);break;
-    case"E2":fill(L.bg);blob(800,200,200,L.lavanda);blob(200,800,180,L.pale);corner("tr",.4);c.fillStyle=L.primary;c.fillRect(0,0,W,6);sf("bold",30,"sans");c.fillStyle=L.primary;c.textAlign="left";c.fillText(v("title"),70,90);sep(120,L.secondary+"90",.35);lt(v("body"),70,175);sf("300",16,"sans");c.fillStyle=L.secondary;c.textAlign="right";c.fillText(v("slide"),W-40,H-35);break;
-    case"F":grad(L.bg,L.pale);blob(540,400,280,L.lavanda);blob(200,700,200,L.pale);blob(800,600,180,L.lavanda);ct(v("quote"),340,{s:36,col:L.dark});sep(670,L.secondary,.2);ct("\u2014 "+v("firma"),710,{w:"300",s:19,f:"sans",col:L.text});ct(v("firma2"),748,{w:"300",s:15,f:"sans",col:L.secondary});break;
-    case"H":grad(L.dark,"#1E1228");blob(540,600,380,L.secondary);blob(200,1200,280,L.lavanda);blob(800,400,230,L.primary);corner("tr",.7);corner("bl",.6);ct(v("label"),210,{w:"300",s:17,f:"sans",col:"#D2C8E0"});sep(240,"#D2C8E0",.15);ct(v("title"),430,{s:48,col:"#FFFFFF"});lt(v("body"),120,720,{s:26,col:"#DCD4EC",mw:840});rr(250,1390,580,65,33,"rgba(255,255,255,0.1)");ct(v("cta"),1433,{w:"500",s:22,f:"sans",col:"#FFFFFF"});ct(v("firma"),1730,{w:"300",s:17,f:"sans",col:"#D2C8E0"});ct(v("firma2"),1765,{w:"300",s:13,f:"sans",col:"#AAA0BD"});break;
+    case"A":{
+      bgLight();corner("tr",1.2);corner("bl",1.2);
+      var yy=ct(v("title"),380,{s:58,col:P.primary});
+      sep(yy+5,P.primary);
+      ct(v("subtitle"),yy+40,{w:"500",s:32,f:"sans",col:P.secondary});
+      bottomBrand(H-52);
+      sf("300",16,"sans");c.fillStyle=P.secondary;c.textAlign="right";c.fillText(v("slide"),W-35,35);
+      break;
+    }
+    case"B":{
+      fill(studio?V.white:L.white);corner("tr",.5);
+      c.fillStyle=P.primary;c.fillRect(0,0,W,6);
+      sf("bold",30,"sans");c.fillStyle=P.primary;c.textAlign="left";c.fillText(v("title"),70,90);
+      sep(120,P.secondary+"90",.4);lt(v("body"),70,175);
+      sf("300",16,"sans");c.fillStyle=P.secondary;c.textAlign="right";c.fillText(v("slide"),W-40,H-35);
+      break;
+    }
+    case"C":{
+      fill(studio?V.sage:L.pale);blob(300,300,250,studio?V.light:L.lavanda);blob(700,700,280,P.bg);blob(150,800,200,studio?V.pale:L.lavanda);
+      corner("tr");corner("bl");corner("tl",.6);
+      sf("bold",110,"serif");c.fillStyle=P.primary+"70";c.textAlign="left";c.fillText("\u201C",100,340);
+      ct(v("quote"),400,{w:"italic bold",s:34,col:P.primary});
+      sf("bold",110,"serif");c.fillStyle=P.primary+"70";c.textAlign="right";c.fillText("\u201D",980,630);
+      if(studio){
+        ct("\u2014  "+v("author"),720,{w:"normal",s:20,f:"sans",col:P.text});
+        logo(H-52);
+      }else{
+        sep(670,P.secondary,.2);
+        ct("\u2014 "+v("firma"),710,{w:"300",s:19,f:"sans",col:P.text});
+        ct(v("firma2"),748,{w:"300",s:15,f:"sans",col:P.secondary});
+      }
+      break;
+    }
+    case"D":{
+      fill(P.bg);c.fillStyle=studio?V.sage:L.primary;c.fillRect(0,0,W,380);
+      blob(200,150,180,studio?V.light:L.lavanda);blob(800,200,150,P.bg);
+      corner("tr",.7);corner("tl",.4);
+      ct(v("title"),160,{s:38,col:"#FFFFFF"});
+      c.fillStyle=P.primary;c.fillRect(0,378,W,4);
+      var py=440;[v("p1"),v("p2"),v("p3"),v("p4")].filter(Boolean).forEach(pt=>{
+        c.beginPath();c.arc(85,py+12,9,0,Math.PI*2);c.fillStyle=P.secondary;c.fill();
+        lt(pt,115,py,{s:22});py+=80
+      });
+      ct(v("cta"),880,{w:"500",s:19,f:"sans",col:P.secondary});
+      bottomBrand(H-52);
+      break;
+    }
+    case"MR":{
+      bgLight();corner("tr",.7);corner("bl",.7);
+      ct("Mito vs Realtà",130,{s:34,col:P.primary});sep(165,P.primary,.25);
+      const cardBg1=studio?V.pale+"CC":L.pale+"CC", cardBd1=studio?V.secondary+"60":L.secondary+"60";
+      const cardBg2=studio?V.sage+"BB":L.lavanda+"BB", cardBd2=studio?V.primary+"60":L.primary+"60";
+      rr(80,230,920,200,15,cardBg1,cardBd1);
+      sf("bold",22,"sans");c.fillStyle=P.secondary;c.textAlign="left";c.fillText("MITO",120,268);
+      ct("\u201C"+v("mito")+"\u201D",295,{w:"italic bold",s:26,col:P.text,lh:1.3});
+      ct("\u2193",470,{w:"bold",s:34,f:"sans",col:P.secondary});
+      rr(80,520,920,230,15,cardBg2,cardBd2);
+      sf("bold",22,"sans");c.fillStyle=P.primary;c.textAlign="left";c.fillText("REALTÀ",120,558);
+      ct("\u201C"+v("realta")+"\u201D",580,{s:26,col:P.primary,lh:1.3});
+      bottomBrand(H-52);
+      break;
+    }
+    case"G":{
+      if(studio){
+        bgLight();blob(540,1400,300,V.light);blob(200,1600,250,V.sage);
+      }else{
+        grad(L.dark,"#1E1228");blob(540,600,380,L.secondary);blob(200,1200,280,L.lavanda);blob(800,400,230,L.primary);
+      }
+      corner("tr",1.2);corner("bl",studio?1.2:.6);
+      if(studio){
+        rr(300,200,480,55,28,P.primary);ct(v("badge"),238,{w:"500",s:20,f:"sans",col:"#FFFFFF"});
+        ct(v("title"),500,{s:44,col:P.primary});sep(720,P.secondary,.3);
+        lt(v("body"),120,800,{s:24,mw:840});
+        ct(v("cta"),1480,{w:"500",s:20,f:"sans",col:P.secondary});
+        logo(H-100,LOGO_H_ST);
+      }else{
+        ct(v("badge"),210,{w:"300",s:17,f:"sans",col:"#D2C8E0"});sep(240,"#D2C8E0",.15);
+        ct(v("title"),430,{s:48,col:"#FFFFFF"});
+        lt(v("body"),120,720,{s:26,col:"#DCD4EC",mw:840});
+        rr(250,1390,580,65,33,"rgba(255,255,255,0.1)");
+        ct(v("cta"),1433,{w:"500",s:22,f:"sans",col:"#FFFFFF"});
+        ct(v("firma"),1730,{w:"300",s:17,f:"sans",col:"#D2C8E0"});
+        ct(v("firma2"),1765,{w:"300",s:13,f:"sans",col:"#AAA0BD"});
+      }
+      break;
+    }
   }
 }
 
@@ -270,38 +351,46 @@ function draw(){
 //  UI
 // ══════════════════════════════════════
 function buildGal(){
-  const tabs=document.getElementById("tabs");tabs.innerHTML="";
-  [["all","Tutti","a"],["studio","Studio","s"],["personale","Personale","p"]].forEach(([k,l,c])=>{
-    const b=document.createElement("button");b.className="ptab"+(filter===k?" on-"+c:"");
-    b.textContent=l;b.onclick=()=>{filter=k;buildGal()};tabs.appendChild(b);
+  // Profilo toggle in gallery
+  const tabs=document.getElementById("tabs");
+  tabs.innerHTML="";
+  [["studio","Studio 🟢","s"],["personale","Personale 🟣","p"]].forEach(([k,l,cls])=>{
+    const b=document.createElement("button");
+    b.className="ptab"+(profilo===k?" on-"+cls:"");
+    b.textContent=l;
+    b.onclick=()=>{profilo=k;buildGal();if(sel)refreshEditor()};
+    tabs.appendChild(b);
   });
+
   const g=document.getElementById("gal");g.innerHTML="";
-  (filter==="all"?["studio","personale"]:[filter]).forEach(prof=>{
-    const sec=document.createElement("div");sec.className="gs";
-    const color=prof==="studio"?"var(--verde)":"var(--lilla)";
-    sec.innerHTML=`<div class="gsl" style="color:${color}"><span class="dt" style="background:${color}"></span>${prof==="studio"?"@psicheholos — Verde":"@dott.ssa_ileniatagliaferro — Lilla"}</div>`;
-    g.appendChild(sec);
-    const grid=document.createElement("div");grid.className="gg";
-    T.filter(t=>t.p===prof).forEach(t=>{
-      const cd=document.createElement("button");cd.className="gc";
-      const col=prof==="studio"?V.primary:L.primary;
-      cd.innerHTML=`<div class="bd${t.a==="st"?" st":""}" style="background:${col}">${t.id}</div><div class="gn">${t.name}</div><div class="gd">${t.d}</div>`;
-      cd.onclick=()=>openEd(t.id);grid.appendChild(cd);
-    });
-    g.appendChild(grid);
+  const grid=document.createElement("div");grid.className="gg";
+  const col=profilo==="studio"?V.primary:L.primary;
+  T.forEach(t=>{
+    const cd=document.createElement("button");cd.className="gc";
+    cd.innerHTML=`<div class="bd${t.a==="st"?" st":""}" style="background:${col}">${t.id}</div><div class="gn">${t.name}</div><div class="gd">${t.d}</div>`;
+    cd.onclick=()=>openEd(t.id);grid.appendChild(cd);
   });
+  g.appendChild(grid);
 }
 
-function openEd(id){
-  sel=id;vals={};const t=gt();
-  const studio=t.p==="studio",ac=studio?V.primary:L.primary,ac2=studio?V.secondary:L.secondary;
+function refreshEditor(){
+  if(!sel)return;
+  const t=gt();if(!t)return;
+  const studio=profilo==="studio",ac=studio?V.primary:L.primary,ac2=studio?V.secondary:L.secondary;
   const pl=studio?"@psicheholos":"@dott.ssa_ileniatagliaferro";
   document.getElementById("etb").innerHTML=`<button class="bbk" onclick="closeEd()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Menu</button><div class="inf"><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div>`;
-  
-  // Build fields for both mobile and desktop
-  const buildFields = (container) => {
+
+  const buildFields=(container)=>{
     container.innerHTML="";
+    // Profilo toggle inside fields
+    const tog=document.createElement("div");tog.className="profilo-toggle";
+    tog.innerHTML=`<button class="profilo-btn${studio?" act-s":""}" onclick="profilo='studio';buildGal();refreshEditor()">🟢 Studio</button><button class="profilo-btn${!studio?" act-p":""}" onclick="profilo='personale';buildGal();refreshEditor()">🟣 Personale</button>`;
+    container.appendChild(tog);
+
     t.fields.forEach(fd=>{
+      // Skip fields not for this profilo
+      if(fd.pOnly&&studio)return;
+      if(fd.sOnly&&!studio)return;
       const d=document.createElement("div");d.className="fm";
       const lb=document.createElement("label");lb.textContent=fd.l;d.appendChild(lb);
       const el=document.createElement(fd.t==="ta"?"textarea":"input");
@@ -313,15 +402,15 @@ function openEd(id){
       d.appendChild(el);container.appendChild(d);
     });
   };
-  
+
   // Mobile fields
   buildFields(document.getElementById("flds"));
-  
+
   // Desktop sidebar
   const df=document.getElementById("deskFields");
   df.innerHTML=`<div class="df-hdr"><div class="badge" style="background:${ac}">${t.id}</div><div><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div></div><div class="df-body" id="dfBody"></div><div class="df-actions" id="dfActs"></div>`;
   buildFields(document.getElementById("dfBody"));
-  
+
   // Desktop actions
   document.getElementById("dfActs").innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2});width:100%" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica PNG</button><button class="brs" style="width:100%;margin-top:8px" onclick="resetF()"><svg viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg>Ripristina</button>`;
 
@@ -329,10 +418,15 @@ function openEd(id){
   const bar=document.getElementById("sb");bar.className="sb sh";
   bar.innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2})" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica PNG</button><button class="brs" onclick="resetF()"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg></button>`;
 
+  requestAnimationFrame(()=>requestAnimationFrame(draw));
+}
+
+function openEd(id){
+  sel=id;vals={};
+  refreshEditor();
   document.getElementById("galS").className="screen hl";
   document.getElementById("edS").className="screen on";
   document.getElementById("edS").scrollTop=0;
-  requestAnimationFrame(()=>requestAnimationFrame(draw));
 }
 
 // Sync field values between mobile and desktop inputs
@@ -343,28 +437,29 @@ function syncField(key,value,source){
 }
 
 function closeEd(){
-  if(window.innerWidth>=768) return; // desktop: always show editor
+  if(window.innerWidth>=768) return;
   sel=null;
   document.getElementById("galS").className="screen on";
   document.getElementById("edS").className="screen hr";
   document.getElementById("sb").className="sb";
 }
 
-function resetF(){vals={};openEd(sel)}
+function resetF(){vals={};refreshEditor()}
 
 function exportPNG(){
   draw();const cv=document.getElementById("cv"),t=gt();
+  const pName=profilo==="studio"?"studio":"personale";
   const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
   if(isIOS){
     cv.toBlob(blob=>{
-      const file=new File([blob],`${t.p}_${t.id}.png`,{type:"image/png"});
+      const file=new File([blob],`${pName}_${t.id}.png`,{type:"image/png"});
       if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
         navigator.share({files:[file],title:"Template Social"}).catch(()=>{window.open(URL.createObjectURL(blob),"_blank")});
       } else window.open(URL.createObjectURL(blob),"_blank");
     },"image/png");
   } else {
     const a=document.createElement("a");
-    a.download=`${t.p}_${t.id}_${new Date().toISOString().slice(0,10)}.png`;
+    a.download=`${pName}_${t.id}_${new Date().toISOString().slice(0,10)}.png`;
     a.href=cv.toDataURL("image/png");a.click();
   }
 }

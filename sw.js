@@ -1,4 +1,4 @@
-const CACHE = "template-social-v1";
+const CACHE = "template-social-v3";
 const ASSETS = [
   "./index.html",
   "./manifest.json",
