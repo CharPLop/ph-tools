@@ -201,7 +201,7 @@ const T=[
   {id:"C",name:"Citazione / Frase",a:"sq",d:"Frase o riflessione",fields:[
     {k:"quote",l:"Citazione",d:"Chiedere aiuto\nnon è debolezza.\nÈ consapevolezza.",t:"ta",r:3},{k:"author",l:"Autore (Studio)",d:"Studio Psiche Holos",sOnly:true},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",pOnly:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT",pOnly:true}]},
   {id:"D",name:"Servizio",a:"sq",d:"Presentazione servizi",fields:[
-    {k:"title",l:"Titolo",d:"Percorsi di gruppo\nper adolescenti",t:"ta",r:2},{k:"p1",l:"Punto 1",d:"Gruppi di 4-6 ragazzi, dai 13 ai 17 anni"},{k:"p2",l:"Punto 2",d:"Incontri settimanali di 90 minuti"},{k:"p3",l:"Punto 3",d:"Condotti da due psicoterapeute"},{k:"p4",l:"Punto 4",d:"Ansia, autostima, relazioni tra pari"},{k:"cta",l:"Call to action",d:"Scrivici per informazioni e iscrizioni"}]},
+    {k:"title",l:"Titolo",d:"Percorsi di gruppo\nper adolescenti",t:"ta",r:2},{k:"punti",l:"Punti elenco (uno per riga)",d:"Gruppi di 4-6 ragazzi, dai 13 ai 17 anni\nIncontri settimanali di 90 minuti\nCondotti da due psicoterapeute\nAnsia, autostima, relazioni tra pari",t:"ta",r:5},{k:"cta",l:"Call to action",d:"Scrivici per informazioni e iscrizioni"}]},
   {id:"MR",name:"Mito vs Realtà",a:"sq",d:"Format virale",fields:[
     {k:"mito",l:"Mito",d:"Devo raccontare\ntutto subito.",t:"ta",r:2},{k:"realta",l:"Realtà",d:"Racconti ciò che\nti senti, con i\ntuoi tempi.",t:"ta",r:3}]},
   {id:"G",name:"Story",a:"st",d:"Story 9:16",fields:[
@@ -300,11 +300,24 @@ function draw(){
       corner("tr",.7);corner("tl",.4);
       ct(v("title"),160,{s:38,col:"#FFFFFF"});
       c.fillStyle=P.primary;c.fillRect(0,378,W,4);
-      var py=440;[v("p1"),v("p2"),v("p3"),v("p4")].filter(Boolean).forEach(pt=>{
-        c.beginPath();c.arc(85,py+12,9,0,Math.PI*2);c.fillStyle=P.secondary;c.fill();
-        lt(pt,115,py,{s:22});py+=80
+      var punti=(v("punti")||"").split("\n").filter(p=>p.trim()),
+          bFS=22,bLH=1.45,dotR=8,dotX=85,txtX=115,maxTxtW=W-txtX-60,
+          totalH=punti.length*(bFS*bLH)+punti.length*18,
+          startY=420,availH=H-startY-180,
+          gap=punti.length>1?Math.min(80,Math.max(50,availH/punti.length)):80;
+      var py=startY;
+      punti.forEach(pt=>{
+        sf("normal",bFS,"sans");c.textAlign="left";c.fillStyle=P.text;
+        var lines=[],ln="";
+        pt.split(" ").forEach(wd=>{var test=ln?ln+" "+wd:wd;if(c.measureText(test).width>maxTxtW){lines.push(ln);ln=wd}else ln=test});
+        if(ln)lines.push(ln);
+        var firstLineY=py,dotCY=firstLineY-bFS*0.3;
+        c.beginPath();c.arc(dotX,dotCY,dotR,0,Math.PI*2);c.fillStyle=P.secondary;c.fill();
+        c.fillStyle=P.text;c.textAlign="left";
+        lines.forEach((l,i)=>{c.fillText(l,txtX,py);py+=bFS*bLH});
+        py+=gap-bFS*bLH;
       });
-      ct(v("cta"),880,{w:"500",s:19,f:"sans",col:P.secondary});
+      ct(v("cta"),Math.max(py+20,880),{w:"500",s:19,f:"sans",col:P.secondary});
       bottomBrand(H-52);
       break;
     }
