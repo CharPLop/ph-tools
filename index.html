@@ -33,9 +33,9 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 #lockScreen .lock-err{color:#FFB4B4;font-size:12px;margin-top:10px;min-height:18px}
 
 /* SCREENS */
-.screen{position:absolute;top:0;left:0;width:100%;min-height:100vh;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;will-change:transform}
+.screen{position:absolute;top:0;left:0;width:100%;min-height:100vh;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;will-change:transform;background:var(--bg)}
 .screen.hr{transform:translateX(100%);opacity:0;pointer-events:none}
-.screen.hl{transform:translateX(-30%);opacity:.5;pointer-events:none}
+.screen.hl{transform:translateX(-100%);opacity:0;pointer-events:none}
 .screen.on{transform:translateX(0);opacity:1}
 
 /* GALLERY */
@@ -58,7 +58,7 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 
 /* EDITOR */
 .etb{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,20px)+8px) 16px 12px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
-.bbk{width:36px;height:36px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bbk{width:auto;height:36px;border-radius:18px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 14px 0 10px;gap:4px;font-size:13px;font-weight:500;color:var(--text)}
 .bbk svg{width:20px;height:20px;stroke:var(--text);stroke-width:2.5;fill:none}
 .etb .inf .nm{font-size:14px;font-weight:600}
 .etb .inf .dm{font-size:11px;color:var(--gray)}
@@ -124,7 +124,6 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 <div id="app" style="display:none">
   <!-- COL 1: Gallery -->
   <div class="screen on" id="galS">
-    <div class="gal-hdr"><h1>Template Social</h1><p>Psiche Holos & Dott.ssa Ilenia Tagliaferro</p></div>
     <div class="ptabs" id="tabs"></div>
     <div id="gal"></div>
   </div>
@@ -200,13 +199,13 @@ const T=[
   {id:"G",name:"Story",p:"studio",a:"st",d:"Story 9:16",fields:[
     {k:"badge",l:"Badge",d:"CONSIGLIO DELLA SETTIMANA"},{k:"title",l:"Titolo",d:"Ascolta per capire,\nnon per rispondere",t:"ta",r:2},{k:"body",l:"Corpo",d:"Quando qualcuno ti parla di un momento difficile, la cosa più importante è far sentire la tua presenza.\n\nNon serve avere tutte le risposte.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Salva questo consiglio ⬆️"}]},
   {id:"E",name:"Copertina Carosello",p:"personale",a:"sq",d:"Prima slide personale",fields:[
-    {k:"title",l:"Titolo",d:"Perché gli\nadolescenti\nsi chiudono?",t:"ta",r:3},{k:"subtitle",l:"Sottotitolo",d:"5 cose che ogni genitore\ndovrebbe sapere",t:"ta",r:2},{k:"slide",l:"N° slide",d:"1/6"}]},
+    {k:"title",l:"Titolo",d:"Perché gli\nadolescenti\nsi chiudono?",t:"ta",r:3},{k:"subtitle",l:"Sottotitolo",d:"5 cose che ogni genitore\ndovrebbe sapere",t:"ta",r:2},{k:"slide",l:"N° slide",d:"1/6"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro — Psicoterapeuta CBT"}]},
   {id:"E2",name:"Slide Interna",p:"personale",a:"sq",d:"Slide interne",fields:[
     {k:"title",l:"Titolo",d:"Non è colpa tua"},{k:"body",l:"Corpo",d:"L'adolescenza è un periodo di grande trasformazione. Il cervello sta ancora maturando, le emozioni sono intense.\n\nSe tuo figlio si chiude, non significa che hai sbagliato qualcosa.",t:"ta",r:4},{k:"slide",l:"N° slide",d:"2/6"}]},
   {id:"F",name:"Frase / Tip",p:"personale",a:"sq",d:"Citazione personale",fields:[
-    {k:"quote",l:"Frase",d:"Non sei i tuoi pensieri.\nSei chi sceglie\ncome rispondere\na quei pensieri.",t:"ta",r:3}]},
+    {k:"quote",l:"Frase",d:"Non sei i tuoi pensieri.\nSei chi sceglie\ncome rispondere\na quei pensieri.",t:"ta",r:3},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro"},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT"}]},
   {id:"H",name:"Story",p:"personale",a:"st",d:"Story 9:16 personale",fields:[
-    {k:"label",l:"Etichetta",d:"PILLOLA DI PSICOLOGIA"},{k:"title",l:"Titolo",d:"Tuo figlio\nnon ti parla più?",t:"ta",r:2},{k:"body",l:"Corpo",d:"Non significa che non ha bisogno di te.\n\nSignifica che sta cercando il suo modo di crescere.\n\nIl tuo compito è restare presente, anche nel silenzio.",t:"ta",r:5},{k:"cta",l:"Call to action",d:"Scorri per saperne di più ➡️"}]},
+    {k:"label",l:"Etichetta",d:"PILLOLA DI PSICOLOGIA"},{k:"title",l:"Titolo",d:"Tuo figlio\nnon ti parla più?",t:"ta",r:2},{k:"body",l:"Corpo",d:"Non significa che non ha bisogno di te.\n\nSignifica che sta cercando il suo modo di crescere.\n\nIl tuo compito è restare presente, anche nel silenzio.",t:"ta",r:5},{k:"cta",l:"Call to action",d:"Scorri per saperne di più ➡️"},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro"},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT • Brescia"}]},
 ];
 
 // ══════════════════════════════════════
@@ -244,7 +243,7 @@ function draw(){
   const branch=(sx,sy,ang,len,n=5)=>{const c1=studio?V.primary:L.primary,c2=studio?V.secondary:L.secondary;const ex=sx+len*Math.cos(ang*Math.PI/180),ey=sy+len*Math.sin(ang*Math.PI/180);c.beginPath();c.moveTo(sx,sy);c.lineTo(ex,ey);c.strokeStyle=c2+"60";c.lineWidth=1.5;c.stroke();for(let i=0;i<n;i++){const tt=(i+1)/(n+1);drawLeaf(sx+(ex-sx)*tt,sy+(ey-sy)*tt,12+Math.sin(i*7)*5,ang+(i%2===0?40:-40),i%2===0?c1:c2)}};
   const corner=(pos,sc=1)=>{if(pos==="tr")for(let i=0;i<4;i++)branch(W-30-i*40,20+i*30,200+i*15,110*sc,5);if(pos==="bl")for(let i=0;i<4;i++)branch(30+i*40,H-20-i*30,20-i*15,110*sc,5);if(pos==="tl")for(let i=0;i<3;i++)branch(30+i*35,20+i*25,-20+i*10,90*sc,4)};
   const sf=(w,s,fam="serif")=>{c.font=`${w} ${s}px ${fam==="serif"?"'Playfair Display',Georgia,serif":"'Montserrat','Segoe UI',sans-serif"}`};
-  const ct=(txt,y,o={})=>{const{w="bold",s=42,f="serif",col=P.primary,lh=1.35}=o;sf(w,s,f);c.fillStyle=col;c.textAlign="center";let cy=y;txt.split("\n").forEach(ln=>{c.fillText(ln,W/2,cy);cy+=s*lh});return cy};
+  const ct=(txt,y,o={})=>{const{w="bold",s=42,f="serif",col=P.primary,lh=1.35,mw=920}=o;sf(w,s,f);c.fillStyle=col;c.textAlign="center";let cy=y;txt.split("\n").forEach(para=>{if(!para.trim()){cy+=s*.5;return}let ln="";para.split(" ").forEach(wd=>{const test=ln?ln+" "+wd:wd;if(c.measureText(test).width>mw){c.fillText(ln,W/2,cy);cy+=s*lh;ln=wd}else ln=test});if(ln){c.fillText(ln,W/2,cy);cy+=s*lh}});return cy};
   const lt=(txt,x,y,o={})=>{const{w="normal",s=24,f="sans",col=P.text,lh=1.5,mw=880}=o;sf(w,s,f);c.fillStyle=col;c.textAlign="left";let cy=y;txt.split("\n").forEach(p=>{if(!p.trim()){cy+=s*.8;return}let ln="";p.split(" ").forEach(wd=>{const test=ln?ln+" "+wd:wd;if(c.measureText(test).width>mw){c.fillText(ln,x,cy);cy+=s*lh;ln=wd}else ln=test});if(ln){c.fillText(ln,x,cy);cy+=s*lh}});return cy};
   const sep=(y,col=P.primary,pct=.35)=>{const lw=W*pct;c.beginPath();c.moveTo((W-lw)/2,y);c.lineTo((W+lw)/2,y);c.strokeStyle=col;c.lineWidth=3;c.stroke()};
   const rr=(x,y,w,h,r,fl,st)=>{c.beginPath();c.roundRect(x,y,w,h,r);if(fl){c.fillStyle=fl;c.fill()}if(st){c.strokeStyle=st;c.lineWidth=2;c.stroke()}};
@@ -260,10 +259,10 @@ function draw(){
     case"D":fill(V.bg);c.fillStyle=V.sage;c.fillRect(0,0,W,380);blob(200,150,180,V.light);blob(800,200,150,V.bg);corner("tr",.7);corner("tl",.4);ct(v("title"),160,{s:38,col:"#FFFFFF"});c.fillStyle=V.primary;c.fillRect(0,378,W,4);var py=440;[v("p1"),v("p2"),v("p3"),v("p4")].filter(Boolean).forEach(pt=>{c.beginPath();c.arc(85,py+12,9,0,Math.PI*2);c.fillStyle=V.secondary;c.fill();lt(pt,115,py,{s:22});py+=80});ct(v("cta"),880,{w:"500",s:19,f:"sans",col:V.secondary});logo(H-52);break;
     case"MR":fill(V.bg);blob(200,200,280,V.light);blob(800,150,240,V.sage);blob(500,800,320,V.light);corner("tr",.7);corner("bl",.7);ct("Mito vs Realtà",130,{s:34,col:V.primary});sep(165,V.primary,.25);rr(80,230,920,200,15,V.pale+"CC",V.secondary+"60");sf("bold",22,"sans");c.fillStyle=V.secondary;c.textAlign="left";c.fillText("MITO",120,268);ct("\u201C"+v("mito")+"\u201D",295,{w:"italic bold",s:26,col:V.text,lh:1.3});ct("\u2193",470,{w:"bold",s:34,f:"sans",col:V.secondary});rr(80,520,920,230,15,V.sage+"BB",V.primary+"60");sf("bold",22,"sans");c.fillStyle=V.primary;c.textAlign="left";c.fillText("REALTÀ",120,558);ct("\u201C"+v("realta")+"\u201D",580,{s:26,col:V.primary,lh:1.3});logo(H-52);break;
     case"G":fill(V.bg);blob(200,200,280,V.light);blob(800,150,240,V.sage);blob(500,800,320,V.light);blob(540,1400,300,V.light);blob(200,1600,250,V.sage);corner("tr",1.2);corner("bl",1.2);rr(300,200,480,55,28,V.primary);ct(v("badge"),238,{w:"500",s:20,f:"sans",col:"#FFFFFF"});ct(v("title"),500,{s:44,col:V.primary});sep(720,V.secondary,.3);lt(v("body"),120,800,{s:24,mw:840});ct(v("cta"),1480,{w:"500",s:20,f:"sans",col:V.secondary});logo(H-100,LOGO_H_ST);break;
-    case"E":grad(L.dark,"#2D1F3A");blob(540,540,380,L.secondary);blob(200,800,250,L.lavanda);blob(850,200,200,L.secondary);corner("tr",.9);corner("bl",.7);ct(v("title"),330,{s:48,f:"sans",col:"#FFFFFF"});sep(570,"#DCD4E6",.25);ct(v("subtitle"),610,{w:"normal",s:23,f:"sans",col:"#DCD4E6"});ct("Dott.ssa Ilenia Tagliaferro \u2014 Psicoterapeuta CBT",930,{w:"300",s:17,f:"sans",col:"#C8BED8"});sf("300",16,"sans");c.fillStyle="#C8BED8";c.textAlign="right";c.fillText(v("slide"),W-35,35);break;
+    case"E":grad(L.dark,"#2D1F3A");blob(540,540,380,L.secondary);blob(200,800,250,L.lavanda);blob(850,200,200,L.secondary);corner("tr",.9);corner("bl",.7);ct(v("title"),330,{s:48,f:"sans",col:"#FFFFFF"});sep(570,"#DCD4E6",.25);ct(v("subtitle"),610,{w:"normal",s:23,f:"sans",col:"#DCD4E6"});ct(v("firma"),930,{w:"300",s:17,f:"sans",col:"#C8BED8"});sf("300",16,"sans");c.fillStyle="#C8BED8";c.textAlign="right";c.fillText(v("slide"),W-35,35);break;
     case"E2":fill(L.bg);blob(800,200,200,L.lavanda);blob(200,800,180,L.pale);corner("tr",.4);c.fillStyle=L.primary;c.fillRect(0,0,W,6);sf("bold",30,"sans");c.fillStyle=L.primary;c.textAlign="left";c.fillText(v("title"),70,90);sep(120,L.secondary+"90",.35);lt(v("body"),70,175);sf("300",16,"sans");c.fillStyle=L.secondary;c.textAlign="right";c.fillText(v("slide"),W-40,H-35);break;
-    case"F":grad(L.bg,L.pale);blob(540,400,280,L.lavanda);blob(200,700,200,L.pale);blob(800,600,180,L.lavanda);ct(v("quote"),340,{s:36,col:L.dark});sep(670,L.secondary,.2);ct("\u2014 Dott.ssa Ilenia Tagliaferro",710,{w:"300",s:19,f:"sans",col:L.text});ct("Psicoterapeuta CBT",748,{w:"300",s:15,f:"sans",col:L.secondary});break;
-    case"H":grad(L.dark,"#1E1228");blob(540,600,380,L.secondary);blob(200,1200,280,L.lavanda);blob(800,400,230,L.primary);corner("tr",.7);corner("bl",.6);ct(v("label"),210,{w:"300",s:17,f:"sans",col:"#D2C8E0"});sep(240,"#D2C8E0",.15);ct(v("title"),430,{s:48,col:"#FFFFFF"});lt(v("body"),120,720,{s:26,col:"#DCD4EC",mw:840});rr(250,1390,580,65,33,"rgba(255,255,255,0.1)");ct(v("cta"),1433,{w:"500",s:22,f:"sans",col:"#FFFFFF"});ct("Dott.ssa Ilenia Tagliaferro",1730,{w:"300",s:17,f:"sans",col:"#D2C8E0"});ct("Psicoterapeuta CBT \u2022 Brescia",1765,{w:"300",s:13,f:"sans",col:"#AAA0BD"});break;
+    case"F":grad(L.bg,L.pale);blob(540,400,280,L.lavanda);blob(200,700,200,L.pale);blob(800,600,180,L.lavanda);ct(v("quote"),340,{s:36,col:L.dark});sep(670,L.secondary,.2);ct("\u2014 "+v("firma"),710,{w:"300",s:19,f:"sans",col:L.text});ct(v("firma2"),748,{w:"300",s:15,f:"sans",col:L.secondary});break;
+    case"H":grad(L.dark,"#1E1228");blob(540,600,380,L.secondary);blob(200,1200,280,L.lavanda);blob(800,400,230,L.primary);corner("tr",.7);corner("bl",.6);ct(v("label"),210,{w:"300",s:17,f:"sans",col:"#D2C8E0"});sep(240,"#D2C8E0",.15);ct(v("title"),430,{s:48,col:"#FFFFFF"});lt(v("body"),120,720,{s:26,col:"#DCD4EC",mw:840});rr(250,1390,580,65,33,"rgba(255,255,255,0.1)");ct(v("cta"),1433,{w:"500",s:22,f:"sans",col:"#FFFFFF"});ct(v("firma"),1730,{w:"300",s:17,f:"sans",col:"#D2C8E0"});ct(v("firma2"),1765,{w:"300",s:13,f:"sans",col:"#AAA0BD"});break;
   }
 }
 
@@ -297,7 +296,7 @@ function openEd(id){
   sel=id;vals={};const t=gt();
   const studio=t.p==="studio",ac=studio?V.primary:L.primary,ac2=studio?V.secondary:L.secondary;
   const pl=studio?"@psicheholos":"@dott.ssa_ileniatagliaferro";
-  document.getElementById("etb").innerHTML=`<button class="bbk" onclick="closeEd()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><div class="inf"><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div>`;
+  document.getElementById("etb").innerHTML=`<button class="bbk" onclick="closeEd()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Menu</button><div class="inf"><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div>`;
   
   // Build fields for both mobile and desktop
   const buildFields = (container) => {
