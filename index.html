@@ -117,26 +117,6 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
   .df-actions{padding:12px 16px;border-top:1px solid var(--border)}
 }
 
-/* CAROUSEL BUTTON in header */
-.car-btn{position:absolute;right:20px;top:calc(env(safe-area-inset-top,20px)+14px);background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:7px 14px;font-size:12px;font-weight:600;color:#fff;display:flex;align-items:center;gap:6px}
-.car-badge{background:#fff;color:var(--verde);font-size:10px;font-weight:700;width:20px;height:20px;border-radius:10px;align-items:center;justify-content:center;display:flex}
-.gal-hdr{position:relative}
-
-/* CAROUSEL PANEL */
-.car-panel{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:.3s}
-.car-panel.open{opacity:1;pointer-events:auto}
-.car-panel-hdr{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,16px)+8px) 16px 12px;background:#fff;border-bottom:1px solid var(--border)}
-.car-panel-hdr h3{flex:1;font-size:16px;font-weight:600}
-.car-panel-hdr .car-count{font-size:12px;color:var(--gray);padding-right:8px}
-.car-panel-body{flex:1;overflow-y:auto;overflow-x:auto;background:var(--bg);padding:16px}
-.car-strip{display:flex;gap:12px;min-height:200px;align-items:flex-start}
-.car-slide{flex-shrink:0;width:150px;background:#fff;border-radius:12px;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.08);position:relative}
-.car-num{position:absolute;top:-6px;left:-6px;width:24px;height:24px;border-radius:12px;background:var(--verde);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:1}
-.car-acts{display:flex;gap:4px;justify-content:center;margin-top:6px}
-.car-acts button{width:30px;height:28px;border-radius:6px;background:#F0F0F0;font-size:13px;display:flex;align-items:center;justify-content:center}
-.car-panel-foot{padding:12px 16px calc(12px + var(--safe-b));background:#fff;border-top:1px solid var(--border);display:flex;gap:10px}
-.car-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#2D2D2D;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transition:.3s;z-index:300;pointer-events:none;white-space:nowrap}
-.car-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -153,7 +133,7 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 <div id="app" style="display:none">
   <!-- COL 1: Gallery -->
   <div class="screen on" id="galS">
-    <div class="gal-hdr"><h1>Template Social</h1><p>Psiche Holos</p><button class="car-btn" onclick="openCarouselPanel()">📑 Carosello <span class="car-badge" style="display:none">0</span></button></div>
+    <div class="gal-hdr"><h1>Template Social</h1><p>Psiche Holos</p></div>
     <div class="ptabs" id="tabs"></div>
     <div id="gal"></div>
   </div>
@@ -168,20 +148,6 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
   </div>
   <!-- COL 3: Fields sidebar (desktop only) -->
   <div class="desk-fields" id="deskFields"></div>
-</div>
-
-<!-- CAROUSEL PANEL -->
-<div class="car-panel" id="carPanel">
-  <div class="car-panel-hdr">
-    <button onclick="closeCarouselPanel()" style="font-size:20px;padding:8px">✕</button>
-    <h3>Anteprima Carosello</h3>
-    <span class="car-count" id="carCount"></span>
-  </div>
-  <div class="car-panel-body" id="carSlides"></div>
-  <div class="car-panel-foot">
-    <button class="bdl" style="background:#2D2D2D;flex:1" onclick="exportCarousel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica tutte</button>
-    <button class="brs" onclick="carousel=[];renderCarouselPanel();updateCarouselBadge()" title="Svuota">🗑</button>
-  </div>
 </div>
 
 <div class="ib" id="ib">
@@ -252,6 +218,14 @@ const T=[
     {k:"mito",l:"Mito",d:"Devo raccontare\ntutto subito.",t:"ta",r:2},{k:"realta",l:"Realtà",d:"Racconti ciò che\nti senti, con i\ntuoi tempi.",t:"ta",r:3}]},
   {id:"TEST",name:"Testimonianza",a:"sq",d:"Recensione anonima",fields:[
     {k:"quote",l:"Testimonianza",d:"Non pensavo che parlare\npotesse fare così tanta\ndifferenza. Ora vedo le cose\ncon occhi nuovi.",t:"ta",r:4},{k:"author",l:"Autore",d:"— Paziente, 28 anni"},{k:"stars",l:"Stelle (1-5)",d:"5"}]},
+  {id:"ESER",name:"Esercizio",a:"sq",d:"Tecnica pratica",fields:[
+    {k:"title",l:"Titolo",d:"Tecnica di respirazione\n4-7-8",t:"ta",r:2},{k:"steps",l:"Passaggi (uno per riga)",d:"Inspira dal naso per 4 secondi\nTrattieni il respiro per 7 secondi\nEspira dalla bocca per 8 secondi\nRipeti per 3-4 cicli",t:"ta",r:5},{k:"nota",l:"Nota finale",d:"Pratica questa tecnica ogni sera prima di dormire"}]},
+  {id:"FAQ",name:"Domanda & Risposta",a:"sq",d:"FAQ / Q&A",fields:[
+    {k:"domanda",l:"Domanda",d:"Quanto dura un\npercorso di psicoterapia?",t:"ta",r:2},{k:"risposta",l:"Risposta",d:"Non esiste una durata standard. Dipende dagli obiettivi, dalla complessità della situazione e dal ritmo di ciascuno.\n\nIn media, un percorso CBT dura 15-20 sedute.",t:"ta",r:5}]},
+  {id:"BIO",name:"Chi sono",a:"sq",d:"Presentazione",fields:[
+    {k:"nome",l:"Nome",d:"Dott.ssa Ilenia Tagliaferro"},{k:"titolo",l:"Titolo professionale",d:"Psicoterapeuta Cognitivo-Comportamentale"},{k:"bio",l:"Bio",d:"Mi occupo di ansia, disturbi dell'umore e gestione dello stress.\n\nCredo che chiedere aiuto sia il primo atto di cura verso sé stessi.",t:"ta",r:4},{k:"dettagli",l:"Dettagli (uno per riga)",d:"📍 Brescia e online\n🎓 Specializzata in CBT\n📞 Primo colloquio gratuito",t:"ta",r:3}]},
+  {id:"CONT",name:"Contatti",a:"sq",d:"Info e contatti",fields:[
+    {k:"title",l:"Titolo",d:"Prenota un colloquio"},{k:"items",l:"Contatti (uno per riga)",d:"📞  030 123 4567\n📧  info@psicheholos.it\n📍  Via Roma 10, Brescia\n🌐  www.psicheholos.it\n📱  @psicheholos",t:"ta",r:6},{k:"cta",l:"Call to action",d:"Il primo colloquio conoscitivo è gratuito"}]},
   {id:"G",name:"Story",a:"st",d:"Story 9:16",fields:[
     {k:"badge",l:"Badge",d:"CONSIGLIO DELLA SETTIMANA"},{k:"title",l:"Titolo",d:"Ascolta per capire,\nnon per rispondere",t:"ta",r:2},{k:"body",l:"Corpo",d:"Quando qualcuno ti parla di un momento difficile, la cosa più importante è far sentire la tua presenza.\n\nNon serve avere tutte le risposte.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Salva questo consiglio ⬆️"},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",pOnly:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT • Brescia",pOnly:true}]},
 ];
@@ -260,7 +234,6 @@ const T=[
 //  STATE
 // ══════════════════════════════════════
 let sel=null,vals={},profilo="studio";
-let carousel=[]; // [{id,vals,profilo}]
 const gt=()=>T.find(t=>t.id===sel);
 const gv=k=>{const t=gt();return vals[k]??t?.fields.find(f=>f.k===k)?.d??""};
 const hx=a=>Math.round(a*255).toString(16).padStart(2,"0");
@@ -481,17 +454,91 @@ function draw(){
     case"TEST":{
       fill(studio?V.sage:L.pale);blob(300,300,250,studio?V.light:L.lavanda);blob(700,700,280,P.bg);
       corner("tr");corner("bl");
-      // Stars
       var starN=Math.min(5,Math.max(0,parseInt(v("stars"))||5)),starY=180;
       sf("normal",36,"sans");c.fillStyle=studio?V.secondary:L.secondary;c.textAlign="center";
       c.fillText("★".repeat(starN)+"☆".repeat(5-starN),W/2,starY);
-      // Quote marks
       sf("bold",120,"serif");c.fillStyle=P.primary+"50";c.textAlign="left";c.fillText("\u201C",80,310);
       ct(v("quote"),380,{w:"italic",s:30,col:P.primary,lh:1.45});
       sf("bold",120,"serif");c.fillStyle=P.primary+"50";c.textAlign="right";c.fillText("\u201D",1000,660);
-      // Author
       sep(720,P.secondary,.2);
       ct(v("author"),770,{w:"300",s:20,f:"sans",col:P.text});
+      bottomBrand(H-52);
+      break;
+    }
+    case"ESER":{
+      fill(P.bg);
+      c.fillStyle=studio?V.sage:L.primary;c.fillRect(0,0,W,340);
+      blob(200,120,180,studio?V.light:L.lavanda);blob(800,180,150,P.bg);
+      corner("tr",.6);corner("tl",.3);
+      ct(v("title"),140,{s:36,col:"#FFFFFF",lh:1.3});
+      c.fillStyle=P.primary;c.fillRect(0,338,W,4);
+      var steps=(v("steps")||"").split("\n").filter(p=>p.trim()),
+          sFS=21,sDotX=75,sTxtX=115,sMaxW=W-sTxtX-60,
+          sAvail=H-380-140,sGap=steps.length>1?Math.min(80,Math.max(50,sAvail/steps.length)):80,
+          sy=400;
+      steps.forEach((st,i)=>{
+        sf("normal",sFS,"sans");c.textAlign="left";
+        var lines=[],ln="";
+        st.split(" ").forEach(wd=>{var test=ln?ln+" "+wd:wd;if(c.measureText(test).width>sMaxW){lines.push(ln);ln=wd}else ln=test});
+        if(ln)lines.push(ln);
+        var numY=sy-sFS*0.3;
+        rr(sDotX-16,numY-16,32,32,16,P.primary);
+        sf("bold",16,"sans");c.fillStyle="#FFFFFF";c.textAlign="center";c.fillText(String(i+1),sDotX,numY+6);
+        c.fillStyle=P.text;c.textAlign="left";sf("normal",sFS,"sans");
+        lines.forEach(l=>{c.fillText(l,sTxtX,sy);sy+=sFS*1.45});
+        sy+=sGap-sFS*1.45;
+      });
+      ct(v("nota"),Math.max(sy+10,870),{w:"italic 300",s:17,f:"sans",col:P.secondary});
+      bottomBrand(H-52);
+      break;
+    }
+    case"FAQ":{
+      bgLight();corner("tr",.8);corner("bl",.6);
+      // Q badge
+      rr(W/2-28,80,56,56,28,P.primary);
+      sf("bold",30,"sans");c.fillStyle="#FFFFFF";c.textAlign="center";c.fillText("?",W/2,110);
+      var qy=ct(v("domanda"),200,{w:"bold",s:34,col:P.primary,lh:1.35});
+      sep(qy+10,P.secondary,.3);
+      // A badge
+      rr(W/2-22,qy+30,44,44,22,P.secondary);
+      sf("bold",24,"sans");c.fillStyle="#FFFFFF";c.textAlign="center";c.fillText("A",W/2,qy+58);
+      lt(v("risposta"),100,qy+100,{s:22,mw:880,lh:1.55});
+      bottomBrand(H-52);
+      break;
+    }
+    case"BIO":{
+      fill(P.bg);
+      c.fillStyle=studio?V.sage+"DD":L.primary+"DD";c.fillRect(0,0,W,380);
+      blob(200,150,200,studio?V.light:L.lavanda);blob(800,200,160,P.bg);
+      corner("tr",.8);corner("tl",.5);
+      // Avatar circle placeholder
+      c.beginPath();c.arc(W/2,180,70,0,Math.PI*2);c.fillStyle="rgba(255,255,255,.25)";c.fill();
+      sf("bold",40,"sans");c.fillStyle="#FFFFFF";c.textAlign="center";
+      var initials=(v("nome")||"").split(" ").map(w=>w[0]||"").join("").slice(0,2).toUpperCase();
+      c.fillText(initials,W/2,195);
+      ct(v("nome"),290,{s:30,col:"#FFFFFF"});
+      ct(v("titolo"),335,{w:"300",s:18,f:"sans",col:"#FFFFFF"});
+      c.fillStyle=P.primary;c.fillRect(0,378,W,4);
+      ct(v("bio"),460,{w:"normal",s:22,f:"sans",col:P.text,lh:1.55,mw:860});
+      var dets=(v("dettagli")||"").split("\n").filter(p=>p.trim()),dy=740;
+      sf("normal",20,"sans");c.fillStyle=P.text;c.textAlign="center";
+      dets.forEach(d=>{c.fillText(d,W/2,dy);dy+=38});
+      bottomBrand(H-52);
+      break;
+    }
+    case"CONT":{
+      bgLight();corner("tr",1);corner("bl",.8);
+      ct(v("title"),180,{s:44,col:P.primary});
+      sep(220,P.primary,.3);
+      var citems=(v("items")||"").split("\n").filter(p=>p.trim()),
+          cy=310;
+      citems.forEach(it=>{
+        rr(120,cy-28,W-240,55,12,studio?V.pale+"CC":L.pale+"CC",P.secondary+"30");
+        sf("normal",21,"sans");c.fillStyle=P.text;c.textAlign="center";
+        c.fillText(it,W/2,cy+2);
+        cy+=72;
+      });
+      ct(v("cta"),Math.max(cy+20,850),{w:"500",s:19,f:"sans",col:P.secondary});
       bottomBrand(H-52);
       break;
     }
@@ -540,9 +587,10 @@ function buildGal(){
   const col=profilo==="studio"?V.primary:L.primary;
   const groups=[
     {label:"Carosello",ids:["A","B","CF"]},
-    {label:"Post singoli",ids:["C","DOM","STAT","PA"]},
-    {label:"Servizi & liste",ids:["D","CK","TEST"]},
-    {label:"Format virali",ids:["MR"]},
+    {label:"Post singoli",ids:["C","DOM","STAT","PA","FAQ"]},
+    {label:"Servizi & liste",ids:["D","CK","ESER"]},
+    {label:"Engagement",ids:["MR","TEST"]},
+    {label:"Profilo & contatti",ids:["BIO","CONT"]},
     {label:"Stories",ids:["G"]}
   ];
   groups.forEach(grp=>{
@@ -600,11 +648,11 @@ function refreshEditor(){
   buildFields(document.getElementById("dfBody"));
 
   // Desktop actions
-  document.getElementById("dfActs").innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2});width:100%" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica PNG</button><button class="bdl" style="background:#2D2D2D;width:100%;margin-top:8px" onclick="addToCarousel()">+ Carosello</button><button class="brs" style="width:100%;margin-top:8px" onclick="resetF()"><svg viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg>Ripristina</button>`;
+  document.getElementById("dfActs").innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2});width:100%" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica PNG</button><button class="brs" style="width:100%;margin-top:8px" onclick="resetF()"><svg viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg>Ripristina</button>`;
 
   // Mobile sticky bar
   const bar=document.getElementById("sb");bar.className="sb sh";
-  bar.innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2})" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica</button><button class="brs" onclick="addToCarousel()" title="Aggiungi al carosello" style="font-size:18px;font-weight:700">+</button><button class="brs" onclick="resetF()"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg></button>`;
+  bar.innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2})" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica PNG</button><button class="brs" onclick="resetF()"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg></button>`;
 
   requestAnimationFrame(()=>requestAnimationFrame(draw));
 }
@@ -649,102 +697,6 @@ function exportPNG(){
     const a=document.createElement("a");
     a.download=`${pName}_${t.id}_${new Date().toISOString().slice(0,10)}.png`;
     a.href=cv.toDataURL("image/png");a.click();
-  }
-}
-
-// ══════════════════════════════════════
-//  CAROUSEL PREVIEW
-// ══════════════════════════════════════
-function addToCarousel(){
-  if(!sel)return;
-  const t=gt();
-  const snap={id:sel,vals:{...vals},profilo:profilo};
-  t.fields.forEach(f=>{if(!snap.vals[f.k])snap.vals[f.k]=f.d});
-  // Capture current canvas as thumbnail
-  draw();
-  const cv=document.getElementById("cv");
-  snap.thumb=cv.toDataURL("image/png");
-  snap.fullData=cv.toDataURL("image/png");
-  carousel.push(snap);
-  updateCarouselBadge();
-  showCarouselToast();
-}
-function removeFromCarousel(idx){
-  carousel.splice(idx,1);
-  renderCarouselPanel();
-  updateCarouselBadge();
-}
-function moveSlide(idx,dir){
-  const ni=idx+dir;
-  if(ni<0||ni>=carousel.length)return;
-  [carousel[idx],carousel[ni]]=[carousel[ni],carousel[idx]];
-  renderCarouselPanel();
-}
-function updateCarouselBadge(){
-  document.querySelectorAll(".car-badge").forEach(b=>{
-    b.textContent=carousel.length;
-    b.style.display=carousel.length>0?"flex":"none";
-  });
-}
-function showCarouselToast(){
-  const t=document.createElement("div");
-  t.className="car-toast";t.textContent="✓ Slide aggiunta al carosello ("+carousel.length+")";
-  document.body.appendChild(t);
-  setTimeout(()=>t.classList.add("show"),10);
-  setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),300)},1800);
-}
-function openCarouselPanel(){
-  document.getElementById("carPanel").classList.add("open");
-  renderCarouselPanel();
-}
-function closeCarouselPanel(){
-  document.getElementById("carPanel").classList.remove("open");
-}
-function renderCarouselPanel(){
-  const cont=document.getElementById("carSlides");
-  const countEl=document.getElementById("carCount");
-  if(countEl)countEl.textContent=carousel.length+" slide";
-  if(!carousel.length){
-    cont.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--gray)"><p style="font-size:28px;margin-bottom:12px">📑</p><p style="font-size:14px">Nessuna slide nel carosello.</p><p style="font-size:12px;margin-top:6px">Apri un template, personalizzalo e premi<br><strong>"+ Carosello"</strong></p></div>';
-    return;
-  }
-  cont.innerHTML="";
-  const strip=document.createElement("div");strip.className="car-strip";
-  carousel.forEach((snap,idx)=>{
-    const t=T.find(x=>x.id===snap.id);if(!t)return;
-    const wrap=document.createElement("div");wrap.className="car-slide";
-    const img=document.createElement("img");
-    img.src=snap.thumb;
-    img.style.cssText="width:100%;border-radius:8px;display:block";
-    const num=document.createElement("div");num.className="car-num";num.textContent=(idx+1);
-    const lbl=document.createElement("div");lbl.style.cssText="font-size:10px;color:var(--gray);text-align:center;margin-top:4px";lbl.textContent=t.name;
-    const acts=document.createElement("div");acts.className="car-acts";
-    acts.innerHTML=`<button onclick="moveSlide(${idx},-1)" title="Sposta a sinistra">◀</button><button onclick="moveSlide(${idx},1)" title="Sposta a destra">▶</button><button onclick="removeFromCarousel(${idx})" title="Rimuovi" style="color:#E55">✕</button>`;
-    wrap.appendChild(num);wrap.appendChild(img);wrap.appendChild(lbl);wrap.appendChild(acts);
-    strip.appendChild(wrap);
-  });
-  cont.appendChild(strip);
-}
-function exportCarousel(){
-  if(!carousel.length)return;
-  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
-  if(isIOS){
-    // On iOS share one at a time
-    carousel.forEach((snap,idx)=>{
-      setTimeout(()=>{
-        const a=document.createElement("a");
-        a.href=snap.fullData;a.target="_blank";
-        a.download=`${snap.profilo}_carosello_${String(idx+1).padStart(2,"0")}_${snap.id}.png`;
-        a.click();
-      },idx*500);
-    });
-  } else {
-    carousel.forEach((snap,idx)=>{
-      const a=document.createElement("a");
-      a.download=`${snap.profilo}_carosello_${String(idx+1).padStart(2,"0")}_${snap.id}.png`;
-      a.href=snap.fullData;
-      setTimeout(()=>a.click(),idx*300);
-    });
   }
 }
 
