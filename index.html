@@ -90,6 +90,11 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 .ib.sh{display:block}.ib p{font-size:13px;line-height:1.5}
 .ib .cb{position:absolute;top:8px;right:12px;color:#fff;opacity:.6;font-size:20px;background:none;border:none;padding:8px}
 
+/* COLOR PICKER */
+.cp-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.cp-dot{width:34px;height:34px;border-radius:17px;border:3px solid transparent;display:flex;align-items:center;justify-content:center;font-size:13px;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.cp-dot.cp-on{border-color:var(--text);transform:scale(1.15);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+
 /* DESKTOP FIELDS SIDEBAR - hidden on mobile */
 .desk-fields{display:none}
 
@@ -187,10 +192,36 @@ if(sessionStorage.getItem("auth")==="1"){
 }
 
 // ══════════════════════════════════════
-//  PALETTES
+//  PALETTES & COLORS
 // ══════════════════════════════════════
 const V={primary:"#4A6741",secondary:"#6B8E5B",bg:"#F7F4EC",sage:"#C5D4BF",white:"#FEFDFB",pale:"#E8F0E4",light:"#D8E6D2",text:"#3D3D3D"};
 const L={dark:"#48365A",primary:"#654E78",secondary:"#8E76A4",lavanda:"#D8CEE4",pale:"#E8E1F0",bg:"#F5F0F8",white:"#FCFAFE",text:"#3D3D3D"};
+
+const COLORS=[
+  {id:"verde",name:"Verde",emoji:"🌿",p:"#4A6741",s:"#6B8E5B"},
+  {id:"lilla",name:"Lilla",emoji:"🟣",p:"#654E78",s:"#8E76A4"},
+  {id:"gioia",name:"Gioia",emoji:"💛",p:"#B8960F",s:"#D4B040"},
+  {id:"tristezza",name:"Tristezza",emoji:"💙",p:"#3D6888",s:"#5E90B4"},
+  {id:"rabbia",name:"Rabbia",emoji:"🔴",p:"#994444",s:"#BB6666"},
+  {id:"paura",name:"Paura",emoji:"💜",p:"#6B3F8F",s:"#9060B8"},
+  {id:"disgusto",name:"Disgusto",emoji:"💚",p:"#3B7A3B",s:"#5CA05C"},
+  {id:"ansia",name:"Ansia",emoji:"🟠",p:"#B07830",s:"#D49850"},
+  {id:"invidia",name:"Invidia",emoji:"🩵",p:"#2E7575",s:"#4A9E9E"},
+  {id:"noia",name:"Noia",emoji:"🔵",p:"#3D3D78",s:"#6060A0"},
+  {id:"imbarazzo",name:"Imbarazzo",emoji:"🩷",p:"#904060",s:"#B86088"},
+];
+
+function updatePalettes(){
+  const cc=COLORS.find(c=>c.id===colore)||COLORS[0];
+  const h2r=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+  const r2h=rgb=>'#'+rgb.map(x=>Math.min(255,Math.max(0,Math.round(x))).toString(16).padStart(2,'0')).join('');
+  const mix=(c,t)=>c.map(v=>v+(255-v)*t);
+  const p=h2r(cc.p),s=h2r(cc.s);
+  V.primary=cc.p;V.secondary=cc.s;V.bg=r2h(mix(p,.93));V.sage=r2h(mix(s,.55));
+  V.white=r2h(mix(p,.97));V.pale=r2h(mix(p,.85));V.light=r2h(mix(s,.7));
+  L.dark=r2h(p.map(v=>Math.max(0,v-50)));L.primary=cc.p;L.secondary=cc.s;
+  L.lavanda=r2h(mix(s,.55));L.pale=r2h(mix(p,.85));L.bg=r2h(mix(p,.93));L.white=r2h(mix(p,.97));
+}
 
 // ══════════════════════════════════════
 //  TEMPLATES (unified — profilo switch changes colors)
@@ -233,7 +264,7 @@ const T=[
 // ══════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════
-let sel=null,vals={},profilo="studio";
+let sel=null,vals={},profilo="studio",colore="verde";
 const gt=()=>T.find(t=>t.id===sel);
 const gv=k=>{const t=gt();return vals[k]??t?.fields.find(f=>f.k===k)?.d??""};
 const hx=a=>Math.round(a*255).toString(16).padStart(2,"0");
@@ -252,6 +283,7 @@ function drawLogo(ctx, cx, cy, h){
 //  CANVAS RENDERER
 // ══════════════════════════════════════
 function draw(){
+  updatePalettes();
   const cv=document.getElementById("cv");const t=gt();if(!cv||!t)return;
   const isS=t.a==="st",W=1080,H=isS?1920:1080;
   cv.width=W;cv.height=H;const c=cv.getContext("2d");
@@ -280,7 +312,7 @@ function draw(){
 
   // Bg helpers
   const bgLight=()=>{fill(P.bg||P.white);blob(200,200,280,studio?V.light:L.lavanda);blob(800,150,240,studio?V.sage:L.pale);blob(500,800,320,studio?V.light:L.lavanda);blob(100,700,200,studio?V.sage:L.pale)};
-  const bgDark=()=>{grad(studio?V.primary:L.dark,studio?"#2A3D24":"#2D1F3A");blob(540,540,380,P.secondary);blob(200,800,250,studio?V.sage:L.lavanda);blob(850,200,200,P.secondary)};
+  const bgDark=()=>{grad(P.primary,L.dark);blob(540,540,380,P.secondary);blob(200,800,250,P.secondary+"40");blob(850,200,200,P.secondary)};
 
   switch(t.id){
     case"A":{
@@ -425,7 +457,7 @@ function draw(){
         txt.split("\n").forEach(ln=>{c.fillText(ln,cx,y);y+=fs*1.4});
       };
       // PRIMA card
-      var c1bg=studio?"#FDECEC":"#F3E8F8",c1bd=studio?"#E8A0A0":"#C8A0D8";
+      var c1bg="#FDECEC",c1bd="#E8A0A0";
       rr(sx,180,cardW,cardH,18,c1bg,c1bd);
       sf("bold",16,"sans");c.fillStyle=c1bd;c.textAlign="center";c.fillText(v("prima_l"),sx+cardW/2,218);
       // X mark
@@ -434,7 +466,7 @@ function draw(){
       c.strokeStyle=c1bd;c.lineWidth=5;c.lineCap="round";c.stroke();
       ctAt(v("prima"),sx+cardW/2,360,24,P.text,cardW-60);
       // DOPO card
-      var c2bg=studio?V.pale:L.pale,c2bd=P.primary;
+      var c2bg=P.pale,c2bd=P.primary;
       rr(sx+cardW+gapX,180,cardW,cardH,18,c2bg,c2bd);
       sf("bold",16,"sans");c.fillStyle=c2bd;c.textAlign="center";c.fillText(v("dopo_l"),sx+cardW+gapX+cardW/2,218);
       // Checkmark
@@ -546,7 +578,7 @@ function draw(){
       if(studio){
         bgLight();blob(540,1400,300,V.light);blob(200,1600,250,V.sage);
       }else{
-        grad(L.dark,"#1E1228");blob(540,600,380,L.secondary);blob(200,1200,280,L.lavanda);blob(800,400,230,L.primary);
+        grad(L.dark,L.dark+"DD");blob(540,600,380,L.secondary);blob(200,1200,280,L.lavanda);blob(800,400,230,L.primary);
       }
       corner("tr",1.2);corner("bl",studio?1.2:.6);
       if(studio){
@@ -556,13 +588,13 @@ function draw(){
         ct(v("cta"),1480,{w:"500",s:20,f:"sans",col:P.secondary});
         logo(H-100,LOGO_H_ST);
       }else{
-        ct(v("badge"),210,{w:"300",s:17,f:"sans",col:"#D2C8E0"});sep(240,"#D2C8E0",.15);
+        ct(v("badge"),210,{w:"300",s:17,f:"sans",col:L.lavanda});sep(240,L.lavanda,.15);
         ct(v("title"),430,{s:48,col:"#FFFFFF"});
-        lt(v("body"),120,720,{s:26,col:"#DCD4EC",mw:840});
+        lt(v("body"),120,720,{s:26,col:L.pale,mw:840});
         rr(250,1390,580,65,33,"rgba(255,255,255,0.1)");
         ct(v("cta"),1433,{w:"500",s:22,f:"sans",col:"#FFFFFF"});
-        ct(v("firma"),1730,{w:"300",s:17,f:"sans",col:"#D2C8E0"});
-        ct(v("firma2"),1765,{w:"300",s:13,f:"sans",col:"#AAA0BD"});
+        ct(v("firma"),1730,{w:"300",s:17,f:"sans",col:L.lavanda});
+        ct(v("firma2"),1765,{w:"300",s:13,f:"sans",col:L.secondary});
       }
       break;
     }
@@ -573,6 +605,7 @@ function draw(){
 //  UI
 // ══════════════════════════════════════
 function buildGal(){
+  updatePalettes();
   const tabs=document.getElementById("tabs");
   tabs.innerHTML="";
   [["studio","Studio 🟢","s"],["personale","Personale 🟣","p"]].forEach(([k,l,cls])=>{
@@ -584,7 +617,6 @@ function buildGal(){
   });
 
   const g=document.getElementById("gal");g.innerHTML="";
-  const col=profilo==="studio"?V.primary:L.primary;
   const groups=[
     {label:"Carosello",ids:["A","B","CF"]},
     {label:"Post singoli",ids:["C","DOM","STAT","PA","FAQ"]},
@@ -597,12 +629,13 @@ function buildGal(){
     const items=grp.ids.map(id=>T.find(t=>t.id===id)).filter(Boolean);
     if(!items.length)return;
     const sec=document.createElement("div");sec.className="gs";
-    sec.innerHTML=`<div class="gsl"><span class="dt" style="background:${col}"></span>${grp.label}</div>`;
+    const dotCol=V.primary;
+    sec.innerHTML=`<div class="gsl"><span class="dt" style="background:${dotCol}"></span>${grp.label}</div>`;
     g.appendChild(sec);
     const grid=document.createElement("div");grid.className="gg";
     items.forEach(t=>{
       const cd=document.createElement("button");cd.className="gc";
-      cd.innerHTML=`<div class="bd${t.a==="st"?" st":""}" style="background:${col}">${t.id}</div><div class="gn">${t.name}</div><div class="gd">${t.d}</div>`;
+      cd.innerHTML=`<div class="bd${t.a==="st"?" st":""}" style="background:${V.primary}">${t.id}</div><div class="gn">${t.name}</div><div class="gd">${t.d}</div>`;
       cd.onclick=()=>openEd(t.id);grid.appendChild(cd);
     });
     g.appendChild(grid);
@@ -611,17 +644,33 @@ function buildGal(){
 
 function refreshEditor(){
   if(!sel)return;
+  updatePalettes();
   const t=gt();if(!t)return;
-  const studio=profilo==="studio",ac=studio?V.primary:L.primary,ac2=studio?V.secondary:L.secondary;
+  const studio=profilo==="studio",ac=V.primary,ac2=V.secondary;
   const pl=studio?"@psicheholos":"@dott.ssa_ileniatagliaferro";
   document.getElementById("etb").innerHTML=`<button class="bbk" onclick="closeEd()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Menu</button><div class="inf"><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div>`;
 
   const buildFields=(container)=>{
     container.innerHTML="";
-    // Profilo toggle inside fields
+    // Profilo toggle
     const tog=document.createElement("div");tog.className="profilo-toggle";
     tog.innerHTML=`<button class="profilo-btn${studio?" act-s":""}" onclick="profilo='studio';buildGal();refreshEditor()">🟢 Studio</button><button class="profilo-btn${!studio?" act-p":""}" onclick="profilo='personale';buildGal();refreshEditor()">🟣 Personale</button>`;
     container.appendChild(tog);
+
+    // Color picker
+    const cp=document.createElement("div");cp.className="fm";
+    cp.innerHTML='<label>Colore</label>';
+    const grid=document.createElement("div");grid.className="cp-grid";
+    COLORS.forEach(cc=>{
+      const b=document.createElement("button");
+      b.className="cp-dot"+(colore===cc.id?" cp-on":"");
+      b.style.background=cc.p;
+      b.title=cc.name;
+      b.textContent=cc.emoji;
+      b.onclick=()=>{colore=cc.id;refreshEditor()};
+      grid.appendChild(b);
+    });
+    cp.appendChild(grid);container.appendChild(cp);
 
     t.fields.forEach(fd=>{
       // Skip fields not for this profilo
@@ -644,7 +693,7 @@ function refreshEditor(){
 
   // Desktop sidebar
   const df=document.getElementById("deskFields");
-  df.innerHTML=`<div class="df-hdr"><div class="badge" style="background:${ac}">${t.id}</div><div><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div></div><div class="df-body" id="dfBody"></div><div class="df-actions" id="dfActs"></div>`;
+  df.innerHTML=`<div class="df-hdr"><div class="badge" style="background:${t.col||ac}">${t.em||t.id}</div><div><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div></div><div class="df-body" id="dfBody"></div><div class="df-actions" id="dfActs"></div>`;
   buildFields(document.getElementById("dfBody"));
 
   // Desktop actions
