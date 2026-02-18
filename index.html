@@ -116,6 +116,27 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
   .df-body{flex:1;overflow-y:auto;padding:14px 16px}
   .df-actions{padding:12px 16px;border-top:1px solid var(--border)}
 }
+
+/* CAROUSEL BUTTON in header */
+.car-btn{position:absolute;right:20px;top:calc(env(safe-area-inset-top,20px)+14px);background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:7px 14px;font-size:12px;font-weight:600;color:#fff;display:flex;align-items:center;gap:6px}
+.car-badge{background:#fff;color:var(--verde);font-size:10px;font-weight:700;width:20px;height:20px;border-radius:10px;align-items:center;justify-content:center;display:flex}
+.gal-hdr{position:relative}
+
+/* CAROUSEL PANEL */
+.car-panel{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:.3s}
+.car-panel.open{opacity:1;pointer-events:auto}
+.car-panel-hdr{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,16px)+8px) 16px 12px;background:#fff;border-bottom:1px solid var(--border)}
+.car-panel-hdr h3{flex:1;font-size:16px;font-weight:600}
+.car-panel-hdr .car-count{font-size:12px;color:var(--gray);padding-right:8px}
+.car-panel-body{flex:1;overflow-y:auto;overflow-x:auto;background:var(--bg);padding:16px}
+.car-strip{display:flex;gap:12px;min-height:200px;align-items:flex-start}
+.car-slide{flex-shrink:0;width:150px;background:#fff;border-radius:12px;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.08);position:relative}
+.car-num{position:absolute;top:-6px;left:-6px;width:24px;height:24px;border-radius:12px;background:var(--verde);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:1}
+.car-acts{display:flex;gap:4px;justify-content:center;margin-top:6px}
+.car-acts button{width:30px;height:28px;border-radius:6px;background:#F0F0F0;font-size:13px;display:flex;align-items:center;justify-content:center}
+.car-panel-foot{padding:12px 16px calc(12px + var(--safe-b));background:#fff;border-top:1px solid var(--border);display:flex;gap:10px}
+.car-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#2D2D2D;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transition:.3s;z-index:300;pointer-events:none;white-space:nowrap}
+.car-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -132,6 +153,7 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 <div id="app" style="display:none">
   <!-- COL 1: Gallery -->
   <div class="screen on" id="galS">
+    <div class="gal-hdr"><h1>Template Social</h1><p>Psiche Holos</p><button class="car-btn" onclick="openCarouselPanel()">📑 Carosello <span class="car-badge" style="display:none">0</span></button></div>
     <div class="ptabs" id="tabs"></div>
     <div id="gal"></div>
   </div>
@@ -146,6 +168,20 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
   </div>
   <!-- COL 3: Fields sidebar (desktop only) -->
   <div class="desk-fields" id="deskFields"></div>
+</div>
+
+<!-- CAROUSEL PANEL -->
+<div class="car-panel" id="carPanel">
+  <div class="car-panel-hdr">
+    <button onclick="closeCarouselPanel()" style="font-size:20px;padding:8px">✕</button>
+    <h3>Anteprima Carosello</h3>
+    <span class="car-count" id="carCount"></span>
+  </div>
+  <div class="car-panel-body" id="carSlides"></div>
+  <div class="car-panel-foot">
+    <button class="bdl" style="background:#2D2D2D;flex:1" onclick="exportCarousel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica tutte</button>
+    <button class="brs" onclick="carousel=[];renderCarouselPanel();updateCarouselBadge()" title="Svuota">🗑</button>
+  </div>
 </div>
 
 <div class="ib" id="ib">
@@ -198,12 +234,24 @@ const T=[
     {k:"title",l:"Titolo",d:"La prima seduta\npsicologica",t:"ta",r:2},{k:"subtitle",l:"Sottotitolo",d:"Cosa succede?"},{k:"slide",l:"N° slide",d:"1/8"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro — Psicoterapeuta CBT",pOnly:true}]},
   {id:"B",name:"Slide Interna",a:"sq",d:"Slide contenuto",fields:[
     {k:"title",l:"Titolo",d:"Non devi raccontare tutto"},{k:"body",l:"Corpo",d:"La prima seduta è uno spazio di conoscenza reciproca. Non c'è nessun obbligo di raccontare tutto subito.\n\nIl terapeuta ti accoglierà senza giudizio, ascoltando ciò che ti senti di condividere.",t:"ta",r:4},{k:"slide",l:"N° slide",d:"2/8"}]},
+  {id:"CF",name:"Carosello Finale",a:"sq",d:"Ultima slide CTA",fields:[
+    {k:"title",l:"Titolo",d:"Ti è stato utile?"},{k:"body",l:"Corpo",d:"Salva questo post per rileggere\nquesti consigli quando ne avrai bisogno.\n\nCondividi con chi potrebbe\ntrovarlo utile.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"📌 Salva   ↗️ Condividi   ❤️ Seguimi"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro — Psicoterapeuta CBT",pOnly:true}]},
   {id:"C",name:"Citazione / Frase",a:"sq",d:"Frase o riflessione",fields:[
     {k:"quote",l:"Citazione",d:"Chiedere aiuto\nnon è debolezza.\nÈ consapevolezza.",t:"ta",r:3},{k:"author",l:"Autore (Studio)",d:"Studio Psiche Holos",sOnly:true},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",pOnly:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT",pOnly:true}]},
+  {id:"DOM",name:"Domanda",a:"sq",d:"Riflessione / engagement",fields:[
+    {k:"question",l:"Domanda",d:"Quando è stata\nl'ultima volta che\nti sei ascoltato\ndavvero?",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Scrivilo nei commenti 💬"}]},
   {id:"D",name:"Servizio",a:"sq",d:"Presentazione servizi",fields:[
     {k:"title",l:"Titolo",d:"Percorsi di gruppo\nper adolescenti",t:"ta",r:2},{k:"punti",l:"Punti elenco (uno per riga)",d:"Gruppi di 4-6 ragazzi, dai 13 ai 17 anni\nIncontri settimanali di 90 minuti\nCondotti da due psicoterapeute\nAnsia, autostima, relazioni tra pari",t:"ta",r:5},{k:"cta",l:"Call to action",d:"Scrivici per informazioni e iscrizioni"}]},
+  {id:"CK",name:"Checklist",a:"sq",d:"Segnali / lista",fields:[
+    {k:"title",l:"Titolo",d:"5 segnali che potresti\naver bisogno di supporto",t:"ta",r:2},{k:"items",l:"Voci (una per riga)",d:"Ti senti in ansia quasi ogni giorno\nFai fatica a dormire o dormi troppo\nEviti situazioni che prima affrontavi\nTi senti solo/a anche in compagnia\nNon riesci a concentrarti",t:"ta",r:6}]},
+  {id:"STAT",name:"Dato Statistico",a:"sq",d:"Sapevi che...?",fields:[
+    {k:"badge",l:"Badge",d:"SAPEVI CHE…?"},{k:"numero",l:"Numero / Dato",d:"1 su 4"},{k:"desc",l:"Descrizione",d:"italiani ha sofferto di un\ndisturbo d'ansia nel\ncorso della vita.",t:"ta",r:3},{k:"fonte",l:"Fonte",d:"Fonte: ISTAT, 2023"}]},
+  {id:"PA",name:"Prima / Dopo",a:"sq",d:"Pensiero CBT",fields:[
+    {k:"prima_l",l:"Etichetta Prima",d:"PENSIERO AUTOMATICO"},{k:"prima",l:"Prima",d:"Devo essere\nperfetto in tutto.",t:"ta",r:2},{k:"dopo_l",l:"Etichetta Dopo",d:"PENSIERO FUNZIONALE"},{k:"dopo",l:"Dopo",d:"Posso fare del mio\nmeglio, e questo basta.",t:"ta",r:2}]},
   {id:"MR",name:"Mito vs Realtà",a:"sq",d:"Format virale",fields:[
     {k:"mito",l:"Mito",d:"Devo raccontare\ntutto subito.",t:"ta",r:2},{k:"realta",l:"Realtà",d:"Racconti ciò che\nti senti, con i\ntuoi tempi.",t:"ta",r:3}]},
+  {id:"TEST",name:"Testimonianza",a:"sq",d:"Recensione anonima",fields:[
+    {k:"quote",l:"Testimonianza",d:"Non pensavo che parlare\npotesse fare così tanta\ndifferenza. Ora vedo le cose\ncon occhi nuovi.",t:"ta",r:4},{k:"author",l:"Autore",d:"— Paziente, 28 anni"},{k:"stars",l:"Stelle (1-5)",d:"5"}]},
   {id:"G",name:"Story",a:"st",d:"Story 9:16",fields:[
     {k:"badge",l:"Badge",d:"CONSIGLIO DELLA SETTIMANA"},{k:"title",l:"Titolo",d:"Ascolta per capire,\nnon per rispondere",t:"ta",r:2},{k:"body",l:"Corpo",d:"Quando qualcuno ti parla di un momento difficile, la cosa più importante è far sentire la tua presenza.\n\nNon serve avere tutte le risposte.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Salva questo consiglio ⬆️"},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",pOnly:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT • Brescia",pOnly:true}]},
 ];
@@ -212,6 +260,7 @@ const T=[
 //  STATE
 // ══════════════════════════════════════
 let sel=null,vals={},profilo="studio";
+let carousel=[]; // [{id,vals,profilo}]
 const gt=()=>T.find(t=>t.id===sel);
 const gv=k=>{const t=gt();return vals[k]??t?.fields.find(f=>f.k===k)?.d??""};
 const hx=a=>Math.round(a*255).toString(16).padStart(2,"0");
@@ -336,6 +385,116 @@ function draw(){
       bottomBrand(H-52);
       break;
     }
+    case"CF":{
+      bgLight();corner("tr",1);corner("bl",1);
+      ct(v("title"),240,{s:48,col:P.primary});
+      sep(290,P.primary,.3);
+      ct(v("body"),370,{w:"normal",s:24,f:"sans",col:P.text,lh:1.6});
+      rr(W/2-320,680,640,65,33,P.primary+"18",P.primary+"40");
+      ct(v("cta"),723,{w:"600",s:22,f:"sans",col:P.primary});
+      bottomBrand(H-52);
+      break;
+    }
+    case"DOM":{
+      fill(P.bg);blob(300,300,300,studio?V.sage:L.lavanda);blob(750,750,260,studio?V.light:L.pale);
+      corner("tr",1.2);corner("bl",1);
+      sf("bold",140,"serif");c.fillStyle=P.primary+"30";c.textAlign="center";c.fillText("?",W/2,250);
+      ct(v("question"),420,{w:"italic bold",s:40,col:P.primary,lh:1.4});
+      sep(750,P.secondary,.25);
+      ct(v("cta"),810,{w:"500",s:20,f:"sans",col:P.secondary});
+      bottomBrand(H-52);
+      break;
+    }
+    case"CK":{
+      fill(P.bg);c.fillStyle=studio?V.sage:L.primary;c.fillRect(0,0,W,320);
+      blob(200,120,180,studio?V.light:L.lavanda);blob(800,180,140,P.bg);
+      corner("tr",.6);corner("tl",.3);
+      ct(v("title"),140,{s:36,col:"#FFFFFF",lh:1.3});
+      c.fillStyle=P.primary;c.fillRect(0,318,W,4);
+      var items=(v("items")||"").split("\n").filter(p=>p.trim()),
+          iFS=21,dotX=75,txtX=115,maxW=W-txtX-60,
+          avail=H-360-120,gap=items.length>1?Math.min(75,Math.max(45,avail/items.length)):75,
+          iy=380;
+      items.forEach((it,idx)=>{
+        sf("normal",iFS,"sans");c.textAlign="left";
+        var lines=[],ln="";
+        it.split(" ").forEach(wd=>{var test=ln?ln+" "+wd:wd;if(c.measureText(test).width>maxW){lines.push(ln);ln=wd}else ln=test});
+        if(ln)lines.push(ln);
+        var ckY=iy-iFS*0.3;
+        rr(dotX-14,ckY-14,28,28,6,P.secondary);
+        sf("bold",18,"sans");c.fillStyle="#FFFFFF";c.textAlign="center";c.fillText("✓",dotX,ckY+7);
+        c.fillStyle=P.text;c.textAlign="left";
+        lines.forEach(l=>{c.fillText(l,txtX,iy);iy+=iFS*1.45});
+        iy+=gap-iFS*1.45;
+      });
+      bottomBrand(H-52);
+      break;
+    }
+    case"STAT":{
+      bgLight();corner("tr",1);corner("bl",.8);
+      rr(W/2-200,110,400,48,24,P.primary);
+      ct(v("badge"),143,{w:"600",s:18,f:"sans",col:"#FFFFFF"});
+      ct(v("numero"),400,{w:"bold",s:120,col:P.primary});
+      sep(470,P.secondary,.3);
+      ct(v("desc"),540,{w:"normal",s:28,f:"sans",col:P.text,lh:1.5});
+      sf("300",16,"sans");c.fillStyle=P.secondary;c.textAlign="center";c.fillText(v("fonte"),W/2,H-100);
+      bottomBrand(H-52);
+      break;
+    }
+    case"PA":{
+      fill(P.bg);blob(200,300,260,studio?V.sage:L.lavanda);blob(800,700,240,studio?V.light:L.pale);
+      corner("tr",.8);corner("bl",.6);
+      ct("Prima / Dopo",100,{s:30,col:P.secondary,f:"sans"});
+      var cardW=420,cardH=350,gapX=40,sx=(W-cardW*2-gapX)/2;
+      // Helper: center multiline text at arbitrary x
+      var ctAt=function(txt,cx,y,fs,col,maxW){
+        sf("bold",fs,"serif");c.fillStyle=col;c.textAlign="center";
+        txt.split("\n").forEach(ln=>{c.fillText(ln,cx,y);y+=fs*1.4});
+      };
+      // PRIMA card
+      var c1bg=studio?"#FDECEC":"#F3E8F8",c1bd=studio?"#E8A0A0":"#C8A0D8";
+      rr(sx,180,cardW,cardH,18,c1bg,c1bd);
+      sf("bold",16,"sans");c.fillStyle=c1bd;c.textAlign="center";c.fillText(v("prima_l"),sx+cardW/2,218);
+      // X mark
+      var xc=sx+cardW/2,xy=280;
+      c.beginPath();c.moveTo(xc-16,xy-16);c.lineTo(xc+16,xy+16);c.moveTo(xc+16,xy-16);c.lineTo(xc-16,xy+16);
+      c.strokeStyle=c1bd;c.lineWidth=5;c.lineCap="round";c.stroke();
+      ctAt(v("prima"),sx+cardW/2,360,24,P.text,cardW-60);
+      // DOPO card
+      var c2bg=studio?V.pale:L.pale,c2bd=P.primary;
+      rr(sx+cardW+gapX,180,cardW,cardH,18,c2bg,c2bd);
+      sf("bold",16,"sans");c.fillStyle=c2bd;c.textAlign="center";c.fillText(v("dopo_l"),sx+cardW+gapX+cardW/2,218);
+      // Checkmark
+      var ck=sx+cardW+gapX+cardW/2;
+      c.beginPath();c.moveTo(ck-15,282);c.lineTo(ck-2,296);c.lineTo(ck+18,262);
+      c.strokeStyle=c2bd;c.lineWidth=5;c.lineCap="round";c.lineJoin="round";c.stroke();
+      ctAt(v("dopo"),sx+cardW+gapX+cardW/2,360,24,P.primary,cardW-60);
+      // Arrow between cards
+      var arX=sx+cardW+gapX/2;
+      sf("bold",36,"sans");c.fillStyle=P.secondary;c.textAlign="center";c.fillText("→",arX,360);
+      // Bottom
+      sep(620,P.secondary,.25);
+      ct("Ristrutturazione cognitiva",670,{w:"300",s:18,f:"sans",col:P.secondary});
+      bottomBrand(H-52);
+      break;
+    }
+    case"TEST":{
+      fill(studio?V.sage:L.pale);blob(300,300,250,studio?V.light:L.lavanda);blob(700,700,280,P.bg);
+      corner("tr");corner("bl");
+      // Stars
+      var starN=Math.min(5,Math.max(0,parseInt(v("stars"))||5)),starY=180;
+      sf("normal",36,"sans");c.fillStyle=studio?V.secondary:L.secondary;c.textAlign="center";
+      c.fillText("★".repeat(starN)+"☆".repeat(5-starN),W/2,starY);
+      // Quote marks
+      sf("bold",120,"serif");c.fillStyle=P.primary+"50";c.textAlign="left";c.fillText("\u201C",80,310);
+      ct(v("quote"),380,{w:"italic",s:30,col:P.primary,lh:1.45});
+      sf("bold",120,"serif");c.fillStyle=P.primary+"50";c.textAlign="right";c.fillText("\u201D",1000,660);
+      // Author
+      sep(720,P.secondary,.2);
+      ct(v("author"),770,{w:"300",s:20,f:"sans",col:P.text});
+      bottomBrand(H-52);
+      break;
+    }
     case"G":{
       if(studio){
         bgLight();blob(540,1400,300,V.light);blob(200,1600,250,V.sage);
@@ -367,7 +526,6 @@ function draw(){
 //  UI
 // ══════════════════════════════════════
 function buildGal(){
-  // Profilo toggle in gallery
   const tabs=document.getElementById("tabs");
   tabs.innerHTML="";
   [["studio","Studio 🟢","s"],["personale","Personale 🟣","p"]].forEach(([k,l,cls])=>{
@@ -379,14 +537,28 @@ function buildGal(){
   });
 
   const g=document.getElementById("gal");g.innerHTML="";
-  const grid=document.createElement("div");grid.className="gg";
   const col=profilo==="studio"?V.primary:L.primary;
-  T.forEach(t=>{
-    const cd=document.createElement("button");cd.className="gc";
-    cd.innerHTML=`<div class="bd${t.a==="st"?" st":""}" style="background:${col}">${t.id}</div><div class="gn">${t.name}</div><div class="gd">${t.d}</div>`;
-    cd.onclick=()=>openEd(t.id);grid.appendChild(cd);
+  const groups=[
+    {label:"Carosello",ids:["A","B","CF"]},
+    {label:"Post singoli",ids:["C","DOM","STAT","PA"]},
+    {label:"Servizi & liste",ids:["D","CK","TEST"]},
+    {label:"Format virali",ids:["MR"]},
+    {label:"Stories",ids:["G"]}
+  ];
+  groups.forEach(grp=>{
+    const items=grp.ids.map(id=>T.find(t=>t.id===id)).filter(Boolean);
+    if(!items.length)return;
+    const sec=document.createElement("div");sec.className="gs";
+    sec.innerHTML=`<div class="gsl"><span class="dt" style="background:${col}"></span>${grp.label}</div>`;
+    g.appendChild(sec);
+    const grid=document.createElement("div");grid.className="gg";
+    items.forEach(t=>{
+      const cd=document.createElement("button");cd.className="gc";
+      cd.innerHTML=`<div class="bd${t.a==="st"?" st":""}" style="background:${col}">${t.id}</div><div class="gn">${t.name}</div><div class="gd">${t.d}</div>`;
+      cd.onclick=()=>openEd(t.id);grid.appendChild(cd);
+    });
+    g.appendChild(grid);
   });
-  g.appendChild(grid);
 }
 
 function refreshEditor(){
@@ -428,11 +600,11 @@ function refreshEditor(){
   buildFields(document.getElementById("dfBody"));
 
   // Desktop actions
-  document.getElementById("dfActs").innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2});width:100%" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica PNG</button><button class="brs" style="width:100%;margin-top:8px" onclick="resetF()"><svg viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg>Ripristina</button>`;
+  document.getElementById("dfActs").innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2});width:100%" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica PNG</button><button class="bdl" style="background:#2D2D2D;width:100%;margin-top:8px" onclick="addToCarousel()">+ Carosello</button><button class="brs" style="width:100%;margin-top:8px" onclick="resetF()"><svg viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg>Ripristina</button>`;
 
   // Mobile sticky bar
   const bar=document.getElementById("sb");bar.className="sb sh";
-  bar.innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2})" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica PNG</button><button class="brs" onclick="resetF()"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg></button>`;
+  bar.innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2})" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica</button><button class="brs" onclick="addToCarousel()" title="Aggiungi al carosello" style="font-size:18px;font-weight:700">+</button><button class="brs" onclick="resetF()"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg></button>`;
 
   requestAnimationFrame(()=>requestAnimationFrame(draw));
 }
@@ -477,6 +649,102 @@ function exportPNG(){
     const a=document.createElement("a");
     a.download=`${pName}_${t.id}_${new Date().toISOString().slice(0,10)}.png`;
     a.href=cv.toDataURL("image/png");a.click();
+  }
+}
+
+// ══════════════════════════════════════
+//  CAROUSEL PREVIEW
+// ══════════════════════════════════════
+function addToCarousel(){
+  if(!sel)return;
+  const t=gt();
+  const snap={id:sel,vals:{...vals},profilo:profilo};
+  t.fields.forEach(f=>{if(!snap.vals[f.k])snap.vals[f.k]=f.d});
+  // Capture current canvas as thumbnail
+  draw();
+  const cv=document.getElementById("cv");
+  snap.thumb=cv.toDataURL("image/png");
+  snap.fullData=cv.toDataURL("image/png");
+  carousel.push(snap);
+  updateCarouselBadge();
+  showCarouselToast();
+}
+function removeFromCarousel(idx){
+  carousel.splice(idx,1);
+  renderCarouselPanel();
+  updateCarouselBadge();
+}
+function moveSlide(idx,dir){
+  const ni=idx+dir;
+  if(ni<0||ni>=carousel.length)return;
+  [carousel[idx],carousel[ni]]=[carousel[ni],carousel[idx]];
+  renderCarouselPanel();
+}
+function updateCarouselBadge(){
+  document.querySelectorAll(".car-badge").forEach(b=>{
+    b.textContent=carousel.length;
+    b.style.display=carousel.length>0?"flex":"none";
+  });
+}
+function showCarouselToast(){
+  const t=document.createElement("div");
+  t.className="car-toast";t.textContent="✓ Slide aggiunta al carosello ("+carousel.length+")";
+  document.body.appendChild(t);
+  setTimeout(()=>t.classList.add("show"),10);
+  setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),300)},1800);
+}
+function openCarouselPanel(){
+  document.getElementById("carPanel").classList.add("open");
+  renderCarouselPanel();
+}
+function closeCarouselPanel(){
+  document.getElementById("carPanel").classList.remove("open");
+}
+function renderCarouselPanel(){
+  const cont=document.getElementById("carSlides");
+  const countEl=document.getElementById("carCount");
+  if(countEl)countEl.textContent=carousel.length+" slide";
+  if(!carousel.length){
+    cont.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--gray)"><p style="font-size:28px;margin-bottom:12px">📑</p><p style="font-size:14px">Nessuna slide nel carosello.</p><p style="font-size:12px;margin-top:6px">Apri un template, personalizzalo e premi<br><strong>"+ Carosello"</strong></p></div>';
+    return;
+  }
+  cont.innerHTML="";
+  const strip=document.createElement("div");strip.className="car-strip";
+  carousel.forEach((snap,idx)=>{
+    const t=T.find(x=>x.id===snap.id);if(!t)return;
+    const wrap=document.createElement("div");wrap.className="car-slide";
+    const img=document.createElement("img");
+    img.src=snap.thumb;
+    img.style.cssText="width:100%;border-radius:8px;display:block";
+    const num=document.createElement("div");num.className="car-num";num.textContent=(idx+1);
+    const lbl=document.createElement("div");lbl.style.cssText="font-size:10px;color:var(--gray);text-align:center;margin-top:4px";lbl.textContent=t.name;
+    const acts=document.createElement("div");acts.className="car-acts";
+    acts.innerHTML=`<button onclick="moveSlide(${idx},-1)" title="Sposta a sinistra">◀</button><button onclick="moveSlide(${idx},1)" title="Sposta a destra">▶</button><button onclick="removeFromCarousel(${idx})" title="Rimuovi" style="color:#E55">✕</button>`;
+    wrap.appendChild(num);wrap.appendChild(img);wrap.appendChild(lbl);wrap.appendChild(acts);
+    strip.appendChild(wrap);
+  });
+  cont.appendChild(strip);
+}
+function exportCarousel(){
+  if(!carousel.length)return;
+  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  if(isIOS){
+    // On iOS share one at a time
+    carousel.forEach((snap,idx)=>{
+      setTimeout(()=>{
+        const a=document.createElement("a");
+        a.href=snap.fullData;a.target="_blank";
+        a.download=`${snap.profilo}_carosello_${String(idx+1).padStart(2,"0")}_${snap.id}.png`;
+        a.click();
+      },idx*500);
+    });
+  } else {
+    carousel.forEach((snap,idx)=>{
+      const a=document.createElement("a");
+      a.download=`${snap.profilo}_carosello_${String(idx+1).padStart(2,"0")}_${snap.id}.png`;
+      a.href=snap.fullData;
+      setTimeout(()=>a.click(),idx*300);
+    });
   }
 }
 
