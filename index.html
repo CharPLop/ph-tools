@@ -65,8 +65,8 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 .gc .gd{font-size:10px;color:var(--gray);margin-top:2px}
 
 /* EDITOR */
-.etb{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,20px)+8px) 16px 12px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
-.bbk{width:auto;height:36px;border-radius:18px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 14px 0 10px;gap:4px;font-size:13px;font-weight:500;color:var(--text)}
+.etb{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,50px)+8px) 16px 12px;background:#fff;border-bottom:1px solid var(--border);position:-webkit-sticky;position:sticky;top:0;z-index:50}
+.bbk{width:auto;height:44px;border-radius:22px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 16px 0 12px;gap:4px;font-size:14px;font-weight:500;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,.1);touch-action:manipulation}
 .bbk svg{width:20px;height:20px;stroke:var(--text);stroke-width:2.5;fill:none}
 .etb .inf .nm{font-size:14px;font-weight:600}
 .etb .inf .dm{font-size:11px;color:var(--gray)}
@@ -735,7 +735,9 @@ function refreshEditor(){
   const t=gt();if(!t)return;
   const studio=profilo==="studio",ac=V.primary,ac2=V.secondary;
   const pl=studio?"@psicheholos":"@dott.ssa_ileniatagliaferro";
-  document.getElementById("etb").innerHTML=`<button class="bbk" onclick="closeEd()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Menu</button><div class="inf"><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div>`;
+  document.getElementById("etb").innerHTML=`<button class="bbk" id="btnBack"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Menu</button><div class="inf"><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div>`;
+  document.getElementById("btnBack").addEventListener("click",closeEd);
+  document.getElementById("btnBack").addEventListener("touchend",function(e){e.preventDefault();closeEd()},{passive:false});
 
   const buildFields=(container)=>{
     container.innerHTML="";
