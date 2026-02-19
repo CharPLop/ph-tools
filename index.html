@@ -53,6 +53,11 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 .profilo-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:600;background:#F0F0F0;color:#666;transition:.2s;text-align:center}
 .profilo-btn.act-s{background:var(--verde);color:#fff}
 .profilo-btn.act-p{background:var(--lilla);color:#fff}
+.brand-sel{display:flex;gap:6px;padding:0 0 12px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+.brand-sel label{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;width:100%;margin-bottom:4px}
+.brand-opts{display:flex;gap:6px;width:100%}
+.brand-btn{flex:1;padding:8px 4px;border-radius:8px;font-size:11px;font-weight:600;background:#F0F0F0;color:#888;transition:.2s;text-align:center;line-height:1.2}
+.brand-btn.on{background:#3D3D3D;color:#fff}
 .gs{padding:8px 16px 4px}
 .gsl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;padding:6px 0;display:flex;align-items:center;gap:6px}
 .gsl .dt{width:8px;height:8px;border-radius:50%}
@@ -261,43 +266,43 @@ function updatePalettes(){
 // ══════════════════════════════════════
 const T=[
   {id:"A",name:"Copertina Carosello",a:"sq",d:"Prima slide",fields:[
-    {k:"title",l:"Titolo",d:"La prima seduta\npsicologica",t:"ta",r:2},{k:"subtitle",l:"Sottotitolo",d:"Cosa succede?"},{k:"slide",l:"N° slide",d:"1/8"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro — Psicoterapeuta CBT",pOnly:true}]},
+    {k:"title",l:"Titolo",d:"La prima seduta\npsicologica",t:"ta",r:2},{k:"subtitle",l:"Sottotitolo",d:"Cosa succede?"},{k:"slide",l:"N° slide",d:"1/8"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro — Psicoterapeuta CBT",brand:true}]},
   {id:"B",name:"Slide Interna",a:"sq",d:"Slide contenuto",fields:[
-    {k:"title",l:"Titolo",d:"Non devi raccontare tutto"},{k:"body",l:"Corpo",d:"La prima seduta è uno spazio di conoscenza reciproca. Non c'è nessun obbligo di raccontare tutto subito.\n\nIl terapeuta ti accoglierà senza giudizio, ascoltando ciò che ti senti di condividere.",t:"ta",r:4},{k:"slide",l:"N° slide",d:"2/8"}]},
+    {k:"title",l:"Titolo",d:"Non devi raccontare tutto"},{k:"body",l:"Corpo",d:"La prima seduta è uno spazio di conoscenza reciproca. Non c'è nessun obbligo di raccontare tutto subito.\n\nIl terapeuta ti accoglierà senza giudizio, ascoltando ciò che ti senti di condividere.",t:"ta",r:4},{k:"slide",l:"N° slide",d:"2/8"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"CF",name:"Carosello Finale",a:"sq",d:"Ultima slide CTA",fields:[
-    {k:"title",l:"Titolo",d:"Ti è stato utile?"},{k:"body",l:"Corpo",d:"Salva questo post per rileggere\nquesti consigli quando ne avrai bisogno.\n\nCondividi con chi potrebbe\ntrovarlo utile.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"📌 Salva   ↗️ Condividi   ❤️ Seguimi"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro — Psicoterapeuta CBT",pOnly:true}]},
+    {k:"title",l:"Titolo",d:"Ti è stato utile?"},{k:"body",l:"Corpo",d:"Salva questo post per rileggere\nquesti consigli quando ne avrai bisogno.\n\nCondividi con chi potrebbe\ntrovarlo utile.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"📌 Salva   ↗️ Condividi   ❤️ Seguimi"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro — Psicoterapeuta CBT",brand:true}]},
   {id:"C",name:"Citazione / Frase",a:"sq",d:"Frase o riflessione",fields:[
-    {k:"quote",l:"Citazione",d:"Chiedere aiuto\nnon è debolezza.\nÈ consapevolezza.",t:"ta",r:3},{k:"author",l:"Autore (Studio)",d:"Studio Psiche Holos",sOnly:true},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",pOnly:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT",pOnly:true}]},
+    {k:"quote",l:"Citazione",d:"Chiedere aiuto\nnon è debolezza.\nÈ consapevolezza.",t:"ta",r:3},{k:"author",l:"Autore",d:"Dott.ssa Ilenia Tagliaferro — Psicoterapeuta CBT"},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",brand:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT",brand:true}]},
   {id:"DOM",name:"Domanda",a:"sq",d:"Riflessione / engagement",fields:[
-    {k:"question",l:"Domanda",d:"Quando è stata\nl'ultima volta che\nti sei ascoltato\ndavvero?",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Scrivilo nei commenti 💬"}]},
+    {k:"question",l:"Domanda",d:"Quando è stata\nl'ultima volta che\nti sei ascoltato\ndavvero?",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Scrivilo nei commenti 💬"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"D",name:"Servizio",a:"sq",d:"Presentazione servizi",fields:[
-    {k:"title",l:"Titolo",d:"Percorsi di gruppo\nper adolescenti",t:"ta",r:2},{k:"punti",l:"Punti elenco (uno per riga)",d:"Gruppi di 4-6 ragazzi, dai 13 ai 17 anni\nIncontri settimanali di 90 minuti\nCondotti da due psicoterapeute\nAnsia, autostima, relazioni tra pari",t:"ta",r:5},{k:"cta",l:"Call to action",d:"Scrivici per informazioni e iscrizioni"}]},
+    {k:"title",l:"Titolo",d:"Percorsi di gruppo\nper adolescenti",t:"ta",r:2},{k:"punti",l:"Punti elenco (uno per riga)",d:"Gruppi di 4-6 ragazzi, dai 13 ai 17 anni\nIncontri settimanali di 90 minuti\nCondotti da due psicoterapeute\nAnsia, autostima, relazioni tra pari",t:"ta",r:5},{k:"cta",l:"Call to action",d:"Scrivici per informazioni e iscrizioni"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"CK",name:"Checklist",a:"sq",d:"Segnali / lista",fields:[
-    {k:"title",l:"Titolo",d:"5 segnali che potresti\naver bisogno di supporto",t:"ta",r:2},{k:"items",l:"Voci (una per riga)",d:"Ti senti in ansia quasi ogni giorno\nFai fatica a dormire o dormi troppo\nEviti situazioni che prima affrontavi\nTi senti solo/a anche in compagnia\nNon riesci a concentrarti",t:"ta",r:6}]},
+    {k:"title",l:"Titolo",d:"5 segnali che potresti\naver bisogno di supporto",t:"ta",r:2},{k:"items",l:"Voci (una per riga)",d:"Ti senti in ansia quasi ogni giorno\nFai fatica a dormire o dormi troppo\nEviti situazioni che prima affrontavi\nTi senti solo/a anche in compagnia\nNon riesci a concentrarti",t:"ta",r:6},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"STAT",name:"Dato Statistico",a:"sq",d:"Sapevi che...?",fields:[
-    {k:"badge",l:"Badge",d:"SAPEVI CHE…?"},{k:"numero",l:"Numero / Dato",d:"1 su 4"},{k:"desc",l:"Descrizione",d:"italiani ha sofferto di un\ndisturbo d'ansia nel\ncorso della vita.",t:"ta",r:3},{k:"fonte",l:"Fonte",d:"Fonte: ISTAT, 2023"}]},
+    {k:"badge",l:"Badge",d:"SAPEVI CHE…?"},{k:"numero",l:"Numero / Dato",d:"1 su 4"},{k:"desc",l:"Descrizione",d:"italiani ha sofferto di un\ndisturbo d'ansia nel\ncorso della vita.",t:"ta",r:3},{k:"fonte",l:"Fonte",d:"Fonte: ISTAT, 2023"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"PA",name:"Prima / Dopo",a:"sq",d:"Pensiero CBT",fields:[
-    {k:"prima_l",l:"Etichetta Prima",d:"PENSIERO AUTOMATICO"},{k:"prima",l:"Prima",d:"Devo essere\nperfetto in tutto.",t:"ta",r:2},{k:"dopo_l",l:"Etichetta Dopo",d:"PENSIERO FUNZIONALE"},{k:"dopo",l:"Dopo",d:"Posso fare del mio\nmeglio, e questo basta.",t:"ta",r:2}]},
+    {k:"prima_l",l:"Etichetta Prima",d:"PENSIERO AUTOMATICO"},{k:"prima",l:"Prima",d:"Devo essere\nperfetto in tutto.",t:"ta",r:2},{k:"dopo_l",l:"Etichetta Dopo",d:"PENSIERO FUNZIONALE"},{k:"dopo",l:"Dopo",d:"Posso fare del mio\nmeglio, e questo basta.",t:"ta",r:2},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"MR",name:"Mito vs Realtà",a:"sq",d:"Format virale",fields:[
-    {k:"mito",l:"Mito",d:"Devo raccontare\ntutto subito.",t:"ta",r:2},{k:"realta",l:"Realtà",d:"Racconti ciò che\nti senti, con i\ntuoi tempi.",t:"ta",r:3}]},
+    {k:"mito",l:"Mito",d:"Devo raccontare\ntutto subito.",t:"ta",r:2},{k:"realta",l:"Realtà",d:"Racconti ciò che\nti senti, con i\ntuoi tempi.",t:"ta",r:3},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"TEST",name:"Testimonianza",a:"sq",d:"Recensione anonima",fields:[
-    {k:"quote",l:"Testimonianza",d:"Non pensavo che parlare\npotesse fare così tanta\ndifferenza. Ora vedo le cose\ncon occhi nuovi.",t:"ta",r:4},{k:"author",l:"Autore",d:"— Paziente, 28 anni"},{k:"stars",l:"Stelle (1-5)",d:"5"}]},
+    {k:"quote",l:"Testimonianza",d:"Non pensavo che parlare\npotesse fare così tanta\ndifferenza. Ora vedo le cose\ncon occhi nuovi.",t:"ta",r:4},{k:"author",l:"Autore",d:"— Paziente, 28 anni"},{k:"stars",l:"Stelle (1-5)",d:"5"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"ESER",name:"Esercizio",a:"sq",d:"Tecnica pratica",fields:[
-    {k:"title",l:"Titolo",d:"Tecnica di respirazione\n4-7-8",t:"ta",r:2},{k:"steps",l:"Passaggi (uno per riga)",d:"Inspira dal naso per 4 secondi\nTrattieni il respiro per 7 secondi\nEspira dalla bocca per 8 secondi\nRipeti per 3-4 cicli",t:"ta",r:5},{k:"nota",l:"Nota finale",d:"Pratica questa tecnica ogni sera prima di dormire"}]},
+    {k:"title",l:"Titolo",d:"Tecnica di respirazione\n4-7-8",t:"ta",r:2},{k:"steps",l:"Passaggi (uno per riga)",d:"Inspira dal naso per 4 secondi\nTrattieni il respiro per 7 secondi\nEspira dalla bocca per 8 secondi\nRipeti per 3-4 cicli",t:"ta",r:5},{k:"nota",l:"Nota finale",d:"Pratica questa tecnica ogni sera prima di dormire"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"FAQ",name:"Domanda & Risposta",a:"sq",d:"FAQ / Q&A",fields:[
-    {k:"domanda",l:"Domanda",d:"Quanto dura un\npercorso di psicoterapia?",t:"ta",r:2},{k:"risposta",l:"Risposta",d:"Non esiste una durata standard. Dipende dagli obiettivi, dalla complessità della situazione e dal ritmo di ciascuno.\n\nIn media, un percorso CBT dura 15-20 sedute.",t:"ta",r:5}]},
+    {k:"domanda",l:"Domanda",d:"Quanto dura un\npercorso di psicoterapia?",t:"ta",r:2},{k:"risposta",l:"Risposta",d:"Non esiste una durata standard. Dipende dagli obiettivi, dalla complessità della situazione e dal ritmo di ciascuno.\n\nIn media, un percorso CBT dura 15-20 sedute.",t:"ta",r:5},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"BIO",name:"Chi sono",a:"sq",d:"Presentazione",fields:[
-    {k:"nome",l:"Nome",d:"Dott.ssa Ilenia Tagliaferro"},{k:"titolo",l:"Titolo professionale",d:"Psicoterapeuta Cognitivo-Comportamentale"},{k:"bio",l:"Bio",d:"Mi occupo di ansia, disturbi dell'umore e gestione dello stress.\n\nCredo che chiedere aiuto sia il primo atto di cura verso sé stessi.",t:"ta",r:4},{k:"dettagli",l:"Dettagli (uno per riga)",d:"📍 Brescia e online\n🎓 Specializzata in CBT\n📞 Primo colloquio gratuito",t:"ta",r:3}]},
+    {k:"nome",l:"Nome",d:"Dott.ssa Ilenia Tagliaferro"},{k:"titolo",l:"Titolo professionale",d:"Psicoterapeuta Cognitivo-Comportamentale"},{k:"bio",l:"Bio",d:"Mi occupo di ansia, disturbi dell'umore e gestione dello stress.\n\nCredo che chiedere aiuto sia il primo atto di cura verso sé stessi.",t:"ta",r:4},{k:"dettagli",l:"Dettagli (uno per riga)",d:"📍 Brescia e online\n🎓 Specializzata in CBT\n📞 Primo colloquio gratuito",t:"ta",r:3},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"CONT",name:"Contatti",a:"sq",d:"Info e contatti",fields:[
-    {k:"title",l:"Titolo",d:"Prenota un colloquio"},{k:"items",l:"Contatti (uno per riga)",d:"📞  030 123 4567\n📧  info@psicheholos.it\n📍  Via Roma 10, Brescia\n🌐  www.psicheholos.it\n📱  @psicheholos",t:"ta",r:6},{k:"cta",l:"Call to action",d:"Il primo colloquio conoscitivo è gratuito"}]},
+    {k:"title",l:"Titolo",d:"Prenota un colloquio"},{k:"items",l:"Contatti (uno per riga)",d:"📞  030 123 4567\n📧  info@psicheholos.it\n📍  Via Roma 10, Brescia\n🌐  www.psicheholos.it\n📱  @psicheholos",t:"ta",r:6},{k:"cta",l:"Call to action",d:"Il primo colloquio conoscitivo è gratuito"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"G",name:"Story",a:"st",d:"Story 9:16",fields:[
-    {k:"badge",l:"Badge",d:"CONSIGLIO DELLA SETTIMANA"},{k:"title",l:"Titolo",d:"Ascolta per capire,\nnon per rispondere",t:"ta",r:2},{k:"body",l:"Corpo",d:"Quando qualcuno ti parla di un momento difficile, la cosa più importante è far sentire la tua presenza.\n\nNon serve avere tutte le risposte.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Salva questo consiglio ⬆️"},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",pOnly:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT • Brescia",pOnly:true}]},
+    {k:"badge",l:"Badge",d:"CONSIGLIO DELLA SETTIMANA"},{k:"title",l:"Titolo",d:"Ascolta per capire,\nnon per rispondere",t:"ta",r:2},{k:"body",l:"Corpo",d:"Quando qualcuno ti parla di un momento difficile, la cosa più importante è far sentire la tua presenza.\n\nNon serve avere tutte le risposte.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Salva questo consiglio ⬆️"},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",brand:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT • Brescia",brand:true}]},
 ];
 
 // ══════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════
-let sel=null,vals={},profilo="studio",colore="verde",activeField=null;
+let sel=null,vals={},profilo="studio",colore="verde",brandMode="logo",activeField=null;
 const gt=()=>T.find(t=>t.id===sel);
 const gv=k=>{const t=gt();return vals[k]??t?.fields.find(f=>f.k===k)?.d??""};
 const hx=a=>Math.round(a*255).toString(16).padStart(2,"0");
@@ -380,15 +385,21 @@ function draw(targetCanvas){
   const rr=(x,y,w,h,r,fl,st)=>{c.beginPath();c.roundRect(x,y,w,h,r);if(fl){c.fillStyle=fl;c.fill()}if(st){c.strokeStyle=st;c.lineWidth=2;c.stroke()}};
   const v=k=>{_phFlag=(!vals[k]||vals[k]==="");return gv(k)};
 
-  // Bottom branding: logo for studio, firma text for personale
+  // Bottom branding: configurable via brandMode
   const curLogo=studio?logoImg:logoPImg;
   const logo=(yPos,h)=>drawLogo(c,W/2,yPos,h||LOGO_H,curLogo);
+  const showLogo=brandMode==="logo"||brandMode==="both";
+  const showFirma=brandMode==="firma"||brandMode==="both";
   const bottomBrand=(yPos,h)=>{
-    if(studio){logo(yPos,h)}
-    else{
-      const pH=60;
-      logo(yPos-12,pH);
-      ct(v("firma")||"",yPos+pH/2-2,{w:"300",s:14,f:"sans",col:P.secondary});
+    if(showLogo&&showFirma){
+      // Both: logo smaller + firma below
+      const pH=55;
+      logo(yPos-14,pH);
+      ct(v("firma")||"",yPos+pH/2-6,{w:"300",s:13,f:"sans",col:P.secondary});
+    }else if(showLogo){
+      logo(yPos,h);
+    }else if(showFirma){
+      ct(v("firma")||"",yPos+4,{w:"300",s:16,f:"sans",col:P.secondary});
     }
   };
 
@@ -420,15 +431,8 @@ function draw(targetCanvas){
       sf("bold",110,"serif");c.fillStyle=P.primary+"70";c.textAlign="left";c.fillText("\u201C",100,340);
       ct(v("quote"),400,{w:"italic bold",s:34,col:P.primary});
       sf("bold",110,"serif");c.fillStyle=P.primary+"70";c.textAlign="right";c.fillText("\u201D",980,630);
-      if(studio){
-        ct("\u2014  "+v("author"),720,{w:"normal",s:20,f:"sans",col:P.text});
-        logo(H-52);
-      }else{
-        sep(670,P.secondary,.2);
-        ct("\u2014 "+v("firma"),710,{w:"300",s:19,f:"sans",col:P.text});
-        ct(v("firma2"),748,{w:"300",s:15,f:"sans",col:P.secondary});
-        logo(H-52,55);
-      }
+      ct("\u2014  "+v("author"),710,{w:"300",s:20,f:"sans",col:P.text});
+      bottomBrand(H-52);
       break;
     }
     case"D":{
@@ -669,19 +673,83 @@ function draw(targetCanvas){
         ct(v("title"),500,{s:44,col:P.primary});sep(720,P.secondary,.3);
         lt(v("body"),120,800,{s:24,mw:840});
         ct(v("cta"),1480,{w:"500",s:20,f:"sans",col:P.secondary});
-        logo(H-100,LOGO_H_ST);
       }else{
         ct(v("badge"),210,{w:"300",s:17,f:"sans",col:L.lavanda});sep(240,L.lavanda,.15);
         ct(v("title"),430,{s:48,col:"#FFFFFF"});
         lt(v("body"),120,720,{s:26,col:L.pale,mw:840});
         rr(250,1390,580,65,33,"rgba(255,255,255,0.1)");
         ct(v("cta"),1433,{w:"500",s:22,f:"sans",col:"#FFFFFF"});
-        ct(v("firma"),1730,{w:"300",s:17,f:"sans",col:L.lavanda});
-        ct(v("firma2"),1765,{w:"300",s:13,f:"sans",col:L.secondary});
-        logo(H-80,70);
+      }
+      // Story bottom branding (brandMode-aware)
+      const stBrCol=studio?P.secondary:L.lavanda;
+      const stBrCol2=studio?P.secondary:L.secondary;
+      if(showFirma&&showLogo){
+        ct(v("firma"),1700,{w:"300",s:17,f:"sans",col:stBrCol});
+        ct(v("firma2")||"",1735,{w:"300",s:13,f:"sans",col:stBrCol2});
+        logo(H-75,60);
+      }else if(showFirma){
+        ct(v("firma"),1730,{w:"300",s:19,f:"sans",col:stBrCol});
+        ct(v("firma2")||"",1768,{w:"300",s:14,f:"sans",col:stBrCol2});
+      }else if(showLogo){
+        logo(H-100,LOGO_H_ST);
       }
       break;
     }
+  }
+
+  // ═══ BRAND OVERLAY — "Firma Visiva" ═══
+  // Drawn LAST on every canvas = always visible = instant recognition
+  const _P=18,_M=30,_LW=2;
+  if(!isS){
+    // ── POST (1080×1080) ──
+    // 1. Top signature stripe (7px)
+    c.fillStyle=P.primary;c.fillRect(0,0,W,7);
+    // 2. Bottom accent line (3px, subtle)
+    c.fillStyle=P.secondary+"60";c.fillRect(0,H-3,W,3);
+    // 3. Corner brackets — Studio:sharp / Personale:rounded
+    c.strokeStyle=P.primary+"40";c.lineWidth=_LW;
+    c.lineCap=studio?"square":"round";
+    // TL
+    c.beginPath();c.moveTo(_P,_P+_M);
+    if(studio){c.lineTo(_P,_P);c.lineTo(_P+_M,_P)}
+    else{c.lineTo(_P,_P+8);c.quadraticCurveTo(_P,_P,_P+8,_P);c.lineTo(_P+_M,_P)}
+    c.stroke();
+    // TR
+    c.beginPath();c.moveTo(W-_P-_M,_P);
+    if(studio){c.lineTo(W-_P,_P);c.lineTo(W-_P,_P+_M)}
+    else{c.lineTo(W-_P-8,_P);c.quadraticCurveTo(W-_P,_P,W-_P,_P+8);c.lineTo(W-_P,_P+_M)}
+    c.stroke();
+    // BL
+    c.beginPath();c.moveTo(_P,H-_P-_M);
+    if(studio){c.lineTo(_P,H-_P);c.lineTo(_P+_M,H-_P)}
+    else{c.lineTo(_P,H-_P-8);c.quadraticCurveTo(_P,H-_P,_P+8,H-_P);c.lineTo(_P+_M,H-_P)}
+    c.stroke();
+    // BR
+    c.beginPath();c.moveTo(W-_P,H-_P-_M);
+    if(studio){c.lineTo(W-_P,H-_P);c.lineTo(W-_P-_M,H-_P)}
+    else{c.lineTo(W-_P,H-_P-8);c.quadraticCurveTo(W-_P,H-_P,W-_P-8,H-_P);c.lineTo(W-_P-_M,H-_P)}
+    c.stroke();
+  }else{
+    // ── STORY (1080×1920) ──
+    // 1. Top branded bar (gradient fade)
+    const _tH=70;
+    const _tG=c.createLinearGradient(0,0,0,_tH);
+    _tG.addColorStop(0,P.primary+"DD");_tG.addColorStop(1,P.primary+"00");
+    c.fillStyle=_tG;c.fillRect(0,0,W,_tH);
+    // Handle text
+    sf("600",17,"sans");c.fillStyle="#FFFFFFBB";c.textAlign="left";
+    const _handle=studio?"@psicheholos":"@"+((gv("firma")||"psicheholos").toLowerCase().replace(/\s+/g,"").replace(/^dott\.?ssa\s*/i,""));
+    c.fillText(_handle,28,40);
+    // Mini logo top-right (only if brandMode includes logo)
+    if(showLogo){c.globalAlpha=.65;drawLogo(c,W-50,35,30,curLogo);c.globalAlpha=1;}
+    // 2. Bottom gradient bar
+    const _bH=45;
+    const _bG=c.createLinearGradient(0,H-_bH,0,H);
+    _bG.addColorStop(0,P.primary+"00");_bG.addColorStop(1,P.primary+"88");
+    c.fillStyle=_bG;c.fillRect(0,H-_bH,W,_bH);
+    // 3. Side accent lines
+    c.strokeStyle=P.secondary+"20";c.lineWidth=1.5;
+    c.beginPath();c.moveTo(3,_tH);c.lineTo(3,H-_bH);c.moveTo(W-3,_tH);c.lineTo(W-3,H-_bH);c.stroke();
   }
 }
 
@@ -759,6 +827,11 @@ function refreshEditor(){
     tog.innerHTML=`<button class="profilo-btn${studio?" act-s":""}" onclick="profilo='studio';buildGal();refreshEditor()">🟢 Studio</button><button class="profilo-btn${!studio?" act-p":""}" onclick="profilo='personale';buildGal();refreshEditor()">🟣 Personale</button>`;
     container.appendChild(tog);
 
+    // Brand mode selector: Logo / Firma / Logo+Firma
+    const bm=document.createElement("div");bm.className="brand-sel";
+    bm.innerHTML=`<label>Branding</label><div class="brand-opts"><button class="brand-btn${brandMode==="logo"?" on":""}" onclick="brandMode='logo';refreshEditor()">🖼 Logo</button><button class="brand-btn${brandMode==="firma"?" on":""}" onclick="brandMode='firma';refreshEditor()">✍️ Firma</button><button class="brand-btn${brandMode==="both"?" on":""}" onclick="brandMode='both';refreshEditor()">🖼+✍️ Entrambi</button></div>`;
+    container.appendChild(bm);
+
     // Color picker
     const cp=document.createElement("div");cp.className="fm";
     cp.innerHTML='<label>Colore</label>';
@@ -775,9 +848,8 @@ function refreshEditor(){
     cp.appendChild(grid);container.appendChild(cp);
 
     t.fields.forEach(fd=>{
-      // Skip fields not for this profilo
-      if(fd.pOnly&&studio)return;
-      if(fd.sOnly&&!studio)return;
+      // Skip brand fields when brandMode is "logo" (no firma needed)
+      if(fd.brand && brandMode==="logo") return;
       const d=document.createElement("div");d.className="fm";
       d.id="fm-"+fd.k;
       const lb=document.createElement("label");lb.textContent=fd.l;d.appendChild(lb);
