@@ -736,12 +736,8 @@ function draw(targetCanvas){
     const _tG=c.createLinearGradient(0,0,0,_tH);
     _tG.addColorStop(0,P.primary+"DD");_tG.addColorStop(1,P.primary+"00");
     c.fillStyle=_tG;c.fillRect(0,0,W,_tH);
-    // Handle text
-    sf("600",17,"sans");c.fillStyle="#FFFFFFBB";c.textAlign="left";
-    const _handle=studio?"@psicheholos":"@"+((gv("firma")||"psicheholos").toLowerCase().replace(/\s+/g,"").replace(/^dott\.?ssa\s*/i,""));
-    c.fillText(_handle,28,40);
     // Mini logo top-right (only if brandMode includes logo)
-    if(showLogo){c.globalAlpha=.65;drawLogo(c,W-50,35,30,curLogo);c.globalAlpha=1;}
+    if(showLogo){c.globalAlpha=.55;drawLogo(c,W-50,35,28,curLogo);c.globalAlpha=1;}
     // 2. Bottom gradient bar
     const _bH=45;
     const _bG=c.createLinearGradient(0,H-_bH,0,H);
