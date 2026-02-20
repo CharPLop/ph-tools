@@ -54,6 +54,7 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 .profilo-btn.act-s{background:var(--verde);color:#fff}
 .profilo-btn.act-p{background:var(--lilla);color:#fff}
 .brand-sel{display:flex;flex-direction:column;gap:6px;padding:12px 0 0;margin-top:8px;border-top:1px solid var(--border)}
+.sec-hdr{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1.2px;padding:14px 0 4px;margin-top:4px;border-top:1px solid var(--border)}.sec-hdr:first-child{border-top:none;padding-top:4px;margin-top:0}
 .brand-sel label{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;width:100%;margin-bottom:4px}
 .brand-opts{display:flex;gap:6px;width:100%}
 .brand-btn{flex:1;padding:8px 4px;border-radius:8px;font-size:11px;font-weight:600;background:#F0F0F0;color:#888;transition:.2s;text-align:center;line-height:1.2}
@@ -212,7 +213,17 @@ logoPImg.onload = () => { logoPReady = true; if(sel) draw(); };
 // ══════════════════════════════════════
 let sel=null,vals={},profilo="studio",colore="standard",brandMode="logo",darkMode=false,activeField=null;
 const gt=()=>T.find(t=>t.id===sel);
-const gv=k=>{const t=gt();return vals[k]??t?.fields.find(f=>f.k===k)?.d??""};
+// Dynamic defaults for firma based on profilo
+const FIRMA_D={
+  studio:{firma:"Psiche Holos",firma2:"Studio di Psicologia"},
+  personale:{firma:"Dott.ssa Ilenia Tagliaferro",firma2:"Psicoterapeuta CBT"}
+};
+const gv=k=>{
+  if(vals[k]!==undefined&&vals[k]!=="") return vals[k];
+  // Firma fields: use profilo-based default
+  if(FIRMA_D[profilo]?.[k]) return FIRMA_D[profilo][k];
+  const t=gt();return t?.fields.find(f=>f.k===k)?.d??"";
+};
 const hx=a=>Math.round(a*255).toString(16).padStart(2,"0");
 
 // ══════════════════════════════════════
@@ -407,11 +418,12 @@ function draw(targetCanvas){
   const rr=(x,y,w,h,r,fl,st)=>{c.beginPath();c.roundRect(x,y,w,h,r);if(fl){c.fillStyle=fl;c.fill()}if(st){c.strokeStyle=st;c.lineWidth=2;c.stroke()}};
   const v=k=>{_phFlag=(!vals[k]||vals[k]==="");return gv(k)};
 
-  // Bottom branding: configurable via brandMode
+  // Bottom branding: studio always logo-only
   const curLogo=studio?logoImg:logoPImg;
   const logo=(yPos,h)=>drawLogo(c,W/2,yPos,h||LOGO_H,curLogo);
-  const showLogo=brandMode==="logo"||brandMode==="both";
-  const showFirma=brandMode==="firma"||brandMode==="both";
+  const effBrand=studio?"logo":brandMode;
+  const showLogo=effBrand==="logo"||effBrand==="both";
+  const showFirma=effBrand==="firma"||effBrand==="both";
   const bottomBrand=(yPos,h)=>{
     const brCol=dk?P.accent:P.secondary;
     if(showLogo&&showFirma){
@@ -856,10 +868,11 @@ function generateThumbnails(){
 
 function switchProfilo(p){
   if(profilo===p) return;
-  if(userRole==="studio"&&p==="personale") return; // studio can't switch to personale
+  if(userRole==="studio"&&p==="personale") return;
   profilo=p;
-  vals={};           // clear all fields
-  colore="standard"; // reset to standard color for this profilo
+  vals={};
+  colore="standard";
+  if(p==="studio") brandMode="logo"; // studio = always logo
   buildGal();
   refreshEditor();
 }
@@ -876,48 +889,54 @@ function refreshEditor(){
 
   const buildFields=(container)=>{
     container.innerHTML="";
-    // 1. Profilo toggle — only visible for "personale" role
+    const effBrand=studio?"logo":brandMode;
+    const sec=txt=>{const h=document.createElement("div");h.className="sec-hdr";h.textContent=txt;container.appendChild(h)};
+
+    // ── PROFILO ──
     if(userRole==="personale"){
+      sec("Profilo");
       const tog=document.createElement("div");tog.className="profilo-toggle";
       tog.innerHTML=`<button class="profilo-btn${studio?" act-s":""}" onclick="switchProfilo('studio')">🟢 Studio</button><button class="profilo-btn${!studio?" act-p":""}" onclick="switchProfilo('personale')">🟣 Personale</button>`;
       container.appendChild(tog);
     }
 
-    // 2. Color picker (standard + emotions) — switching keeps fields
+    // ── LAYOUT ──
+    sec("Layout");
+    // Colore
     const cp=document.createElement("div");cp.className="fm";
     cp.innerHTML='<label>Colore</label>';
     const grid=document.createElement("div");grid.className="cp-grid";
-    // Standard button first
     const stdBtn=document.createElement("button");
     stdBtn.className="cp-dot"+(colore==="standard"?" cp-on":"");
     const stdCol=studio?STD_STUDIO:STD_PERSONALE;
     stdBtn.style.background=stdCol.p;
-    stdBtn.title="Standard "+(studio?"Studio":"Personale");
+    stdBtn.title=(studio?"Studio":"Personale");
     stdBtn.textContent=studio?"🟢":"🟣";
     stdBtn.onclick=()=>{colore="standard";refreshEditor()};
     grid.appendChild(stdBtn);
-    // Emotion colors
     COLORS.forEach(cc=>{
       const b=document.createElement("button");
       b.className="cp-dot"+(colore===cc.id?" cp-on":"");
-      b.style.background=cc.p;
-      b.title=cc.name;
-      b.textContent=cc.emoji;
+      b.style.background=cc.p;b.title=cc.name;b.textContent=cc.emoji;
       b.onclick=()=>{colore=cc.id;refreshEditor()};
       grid.appendChild(b);
     });
     cp.appendChild(grid);container.appendChild(cp);
+    // Tema
+    const dm=document.createElement("div");dm.className="fm";
+    dm.innerHTML=`<label>Tema</label><div class="brand-opts"><button class="brand-btn${!darkMode?" on":""}" onclick="darkMode=false;refreshEditor()">☀️ Light</button><button class="brand-btn${darkMode?" on":""}" onclick="darkMode=true;refreshEditor()">🌙 Dark</button></div>`;
+    container.appendChild(dm);
 
-    // 3. Text fields
+    // ── CONTENUTO ──
+    sec("Contenuto");
     t.fields.forEach(fd=>{
-      // Skip brand fields when brandMode is "logo" (no firma needed)
-      if(fd.brand && brandMode==="logo") return;
+      if(fd.brand && effBrand==="logo") return;
       const d=document.createElement("div");d.className="fm";
       d.id="fm-"+fd.k;
       const lb=document.createElement("label");lb.textContent=fd.l;d.appendChild(lb);
       const el=document.createElement(fd.t==="ta"?"textarea":"input");
       if(fd.t==="ta")el.rows=fd.r||3;
-      el.value=vals[fd.k]||"";el.placeholder=fd.d||"";
+      el.value=vals[fd.k]||"";el.placeholder=FIRMA_D[profilo]?.[fd.k]||fd.d||"";
       el.oninput=()=>{vals[fd.k]=el.value;syncField(fd.k,el.value,el);debounceDraw()};
       el.onfocus=()=>{activeField=fd.k;d.classList.add("fm-active");el.style.borderColor=ac};
       el.onblur=()=>{activeField=null;d.classList.remove("fm-active");el.style.borderColor="var(--border)"};
@@ -925,15 +944,17 @@ function refreshEditor(){
       d.appendChild(el);container.appendChild(d);
     });
 
-    // 4. Brand mode selector: Logo / Firma / Logo+Firma
-    const bm=document.createElement("div");bm.className="brand-sel";
-    bm.innerHTML=`<label>Branding</label><div class="brand-opts"><button class="brand-btn${brandMode==="logo"?" on":""}" onclick="brandMode='logo';refreshEditor()">🖼 Logo</button><button class="brand-btn${brandMode==="firma"?" on":""}" onclick="brandMode='firma';refreshEditor()">✍️ Firma</button><button class="brand-btn${brandMode==="both"?" on":""}" onclick="brandMode='both';refreshEditor()">🖼+✍️ Entrambi</button></div>`;
-    container.appendChild(bm);
-
-    // 5. Standard / Dark toggle
-    const dm=document.createElement("div");dm.className="brand-sel";
-    dm.innerHTML=`<label>Tema</label><div class="brand-opts"><button class="brand-btn${!darkMode?" on":""}" onclick="darkMode=false;refreshEditor()">☀️ Standard</button><button class="brand-btn${darkMode?" on":""}" onclick="darkMode=true;refreshEditor()">🌙 Dark</button></div>`;
-    container.appendChild(dm);
+    // ── BRANDING ──
+    sec("Branding");
+    if(!studio){
+      const bm=document.createElement("div");bm.className="fm";
+      bm.innerHTML=`<div class="brand-opts"><button class="brand-btn${brandMode==="logo"?" on":""}" onclick="brandMode='logo';refreshEditor()">🖼 Logo</button><button class="brand-btn${brandMode==="firma"?" on":""}" onclick="brandMode='firma';refreshEditor()">✍️ Firma</button><button class="brand-btn${brandMode==="both"?" on":""}" onclick="brandMode='both';refreshEditor()">🖼+✍️ Entrambi</button></div>`;
+      container.appendChild(bm);
+    }else{
+      const bl=document.createElement("div");bl.className="fm";
+      bl.innerHTML='<span style="font-size:13px;color:var(--gray)">🖼 Logo (sempre attivo)</span>';
+      container.appendChild(bl);
+    }
   };
 
   // Mobile fields
