@@ -297,6 +297,8 @@ const T=[
     {k:"title",l:"Titolo",d:"Prenota un colloquio"},{k:"items",l:"Contatti (uno per riga)",d:"📞  030 123 4567\n📧  info@psicheholos.it\n📍  Via Roma 10, Brescia\n🌐  www.psicheholos.it\n📱  @psicheholos",t:"ta",r:6},{k:"cta",l:"Call to action",d:"Il primo colloquio conoscitivo è gratuito"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
   {id:"G",name:"Story",a:"st",d:"Story 9:16",fields:[
     {k:"badge",l:"Badge",d:"CONSIGLIO DELLA SETTIMANA"},{k:"title",l:"Titolo",d:"Ascolta per capire,\nnon per rispondere",t:"ta",r:2},{k:"body",l:"Corpo",d:"Quando qualcuno ti parla di un momento difficile, la cosa più importante è far sentire la tua presenza.\n\nNon serve avere tutte le risposte.",t:"ta",r:4},{k:"cta",l:"Call to action",d:"Salva questo consiglio ⬆️"},{k:"firma",l:"Firma (riga 1)",d:"Dott.ssa Ilenia Tagliaferro",brand:true},{k:"firma2",l:"Firma (riga 2)",d:"Psicoterapeuta CBT • Brescia",brand:true}]},
+  {id:"GC",name:"Story Citazione",a:"st",d:"Frase / riflessione 9:16",em:"✦",col:"#8E76A4",fields:[
+    {k:"quote",l:"Citazione",d:"Chiedere aiuto\nnon è debolezza.\nÈ consapevolezza.",t:"ta",r:3},{k:"author",l:"Autore",d:"Dott.ssa Ilenia Tagliaferro"},{k:"firma",l:"Firma",d:"Dott.ssa Ilenia Tagliaferro",brand:true}]},
 ];
 
 // ══════════════════════════════════════
@@ -695,6 +697,42 @@ function draw(targetCanvas){
       }
       break;
     }
+    case"GC":{
+      // Story Citazione — elegant quote on 9:16
+      if(studio){
+        fill(studio?V.sage:L.pale);
+        blob(300,500,350,V.light);blob(750,1400,300,V.pale);blob(150,1100,250,V.sage);
+      }else{
+        grad(L.dark,L.dark+"CC");
+        blob(540,700,400,L.secondary+"50");blob(200,1300,300,L.lavanda+"40");blob(800,400,250,L.primary+"60");
+      }
+      corner("tr",1.2);corner("bl",.8);corner("tl",.5);
+      // Big open quote mark
+      sf("bold",180,"serif");c.fillStyle=P.primary+(studio?"50":"35");c.textAlign="left";
+      c.fillText("\u201C",100,580);
+      // Quote text — centered, large
+      const qCol=studio?P.primary:"#FFFFFF";
+      ct(v("quote"),720,{w:"italic bold",s:46,col:qCol,mw:860});
+      // Close quote
+      sf("bold",180,"serif");c.fillStyle=P.primary+(studio?"50":"35");c.textAlign="right";
+      c.fillText("\u201D",980,1080);
+      // Separator
+      sep(1160,studio?P.secondary:L.lavanda,.2);
+      // Author
+      const aCol=studio?P.text:(L.lavanda);
+      ct("\u2014  "+v("author"),1220,{w:"300",s:24,f:"sans",col:aCol});
+      // Bottom branding
+      const gcBrCol=studio?P.secondary:L.lavanda;
+      if(showFirma&&showLogo){
+        ct(v("firma"),1700,{w:"300",s:17,f:"sans",col:gcBrCol});
+        logo(H-75,60);
+      }else if(showFirma){
+        ct(v("firma"),1740,{w:"300",s:19,f:"sans",col:gcBrCol});
+      }else if(showLogo){
+        logo(H-100,LOGO_H_ST);
+      }
+      break;
+    }
   }
 
   // ═══ BRAND OVERLAY — "Firma Visiva" ═══
@@ -771,7 +809,7 @@ function buildGal(){
     {label:"Servizi & liste",ids:["D","CK","ESER"]},
     {label:"Engagement",ids:["MR","TEST"]},
     {label:"Profilo & contatti",ids:["BIO","CONT"]},
-    {label:"Stories",ids:["G"]}
+    {label:"Stories",ids:["G","GC"]}
   ];
   groups.forEach(grp=>{
     const items=grp.ids.map(id=>T.find(t=>t.id===id)).filter(Boolean);
