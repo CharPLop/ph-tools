@@ -17,7 +17,8 @@
 :root{--verde:#4A6741;--verde2:#6B8E5B;--verde-bg:#F7F4EC;--verde-sage:#C5D4BF;--verde-pale:#E8F0E4;--lilla-dk:#48365A;--lilla:#654E78;--lilla2:#8E76A4;--lilla-lav:#D8CEE4;--lilla-pale:#E8E1F0;--lilla-bg:#F5F0F8;--text:#3D3D3D;--gray:#888;--border:#E5E5E5;--bg:#F5F5F5;--safe-b:env(safe-area-inset-bottom,0px)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Montserrat','Segoe UI',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;width:100%;max-width:100vw}
-button{font-family:inherit;cursor:pointer;border:none;background:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+html{overscroll-behavior:none}
 input,textarea{font-family:inherit;-webkit-appearance:none}
 
 /* PASSWORD SCREEN */
@@ -103,12 +104,6 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 .cp-dot{width:34px;height:34px;border-radius:17px;border:3px solid transparent;display:flex;align-items:center;justify-content:center;font-size:13px;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .cp-dot.cp-on{border-color:var(--text);transform:scale(1.15);box-shadow:0 2px 8px rgba(0,0,0,.2)}
 
-/* FULLSCREEN OVERLAY */
-.fs-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.fs-overlay.on{opacity:1;pointer-events:auto}
-.fs-overlay canvas{max-width:96vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.4)}
-.fs-close{position:absolute;top:env(safe-area-inset-top,12px);right:12px;width:44px;height:44px;border-radius:22px;background:rgba(255,255,255,.15);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;border:none;z-index:201;margin-top:8px}
-
 /* DOWNLOAD TOAST */
 .dl-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(30px);z-index:300;background:#1a1a1a;color:#fff;padding:14px 28px;border-radius:16px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.3)}
 .dl-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -189,10 +184,6 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
   <p>Per usarla come app: tocca <strong>Condividi</strong> ↗ poi <strong>"Aggiungi a Home"</strong></p>
 </div>
 
-<div class="fs-overlay" id="fsOverlay" onclick="closeFS()">
-  <button class="fs-close" onclick="closeFS()">✕</button>
-  <canvas id="fsCv"></canvas>
-</div>
 
 <div class="dl-toast" id="dlToast"><div class="ck">✓</div><span>Immagine scaricata!</span></div>
 
@@ -348,18 +339,7 @@ function debounceDraw(delay=80){
   _drawTimer=requestAnimationFrame(()=>{_drawTimer=null;draw()});
 }
 
-// Fullscreen preview
-function openFS(){
-  if(!sel)return;
-  const ov=document.getElementById("fsOverlay");
-  const fc=document.getElementById("fsCv");
-  const t=gt();if(!t)return;
-  const isS=t.a==="st",W=1080,H=isS?1920:1080;
-  fc.width=W;fc.height=H;
-  draw(fc);
-  ov.classList.add("on");
-}
-function closeFS(){document.getElementById("fsOverlay").classList.remove("on")}
+
 
 // Download toast
 function showToast(msg){
@@ -976,10 +956,7 @@ function refreshEditor(){
 
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     draw();
-    // Canvas click → fullscreen (mobile)
-    const cvEl=document.getElementById("cv");
-    cvEl.onclick=openFS;
-    cvEl.style.cursor="pointer";
+
   }));
 }
 
@@ -988,14 +965,9 @@ function openEd(id){
   refreshEditor();
   document.getElementById("galS").className="screen hl";
   document.getElementById("edS").className="screen on";
-  document.getElementById("edS").scrollTop=0;
-  // Scroll to canvas on mobile
-  if(window.innerWidth<768){
-    setTimeout(()=>{
-      const pvEl=document.querySelector(".pvm");
-      if(pvEl)pvEl.scrollIntoView({behavior:"smooth",block:"start"});
-    },400);
-  }
+  // Scroll content area to top on mobile
+  const ebEl=document.getElementById("eb");
+  if(ebEl)ebEl.scrollTop=0;
 }
 
 // Sync field values between mobile and desktop inputs
@@ -1013,43 +985,74 @@ function closeEd(){
   document.getElementById("sb").className="sb";
 }
 
+// Swipe right → back to templates (mobile)
+(function(){
+  let sx=0,sy=0,tracking=false;
+  const ed=()=>document.getElementById("edS");
+  document.addEventListener("touchstart",e=>{
+    if(window.innerWidth>=768||!sel)return;
+    const t=e.touches[0];sx=t.clientX;sy=t.clientY;tracking=sx<60;
+  },{passive:true});
+  document.addEventListener("touchmove",e=>{
+    if(!tracking)return;
+    const dx=e.touches[0].clientX-sx;
+    if(dx>0){const el=ed();if(el)el.style.transform=`translateX(${Math.min(dx,300)}px)`;el.style.opacity=Math.max(.3,1-dx/300)}
+  },{passive:true});
+  document.addEventListener("touchend",e=>{
+    if(!tracking)return;tracking=false;
+    const el=ed();if(!el)return;
+    const dx=e.changedTouches[0].clientX-sx;
+    el.style.transition="transform .25s,opacity .25s";
+    if(dx>80){closeEd()}else{el.style.transform="";el.style.opacity=""}
+    setTimeout(()=>{el.style.transition="";},300);
+  },{passive:true});
+})();
+
 function resetF(){vals={};refreshEditor()}
 
+// Sync dataURL → Blob (no async canvas issues)
+function dataURLtoBlob(url){
+  const [hdr,b64]=url.split(",");const mime=hdr.match(/:(.*?);/)[1];
+  const bin=atob(b64);const arr=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+  return new Blob([arr],{type:mime});
+}
+
+let _dlBusy=false;
 function exportPNG(){
-  const t=gt();if(!t)return;
+  if(_dlBusy)return;_dlBusy=true;
+  const t=gt();if(!t){_dlBusy=false;return}
   try{
-    // Force fresh draw on visible canvas first (restores context after iOS background)
-    _exporting=false;
-    draw();
     _exporting=true;
     const isS=t.a==="st",W=1080,H=isS?1920:1080;
-    const offCv=document.createElement("canvas");offCv.width=W;offCv.height=H;
-    draw(offCv);
-    _exporting=false;
-    draw(); // restore preview with placeholders
+    const off=document.createElement("canvas");off.width=W;off.height=H;
+    draw(off);
+    const dataURL=off.toDataURL("image/png");
+    _exporting=false;draw();
+    if(!dataURL||dataURL.length<100){showToast("Errore, riprova");_dlBusy=false;return}
     const pName=profilo==="studio"?"studio":"personale";
     const dkTag=darkMode?"_dark":"";
     const fname=`${pName}_${t.id}${dkTag}`;
-    const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
-    if(isIOS){
-      offCv.toBlob(blob=>{
-        if(!blob){showToast("Errore, riprova ⚠️");return}
-        const file=new File([blob],fname+".png",{type:"image/png"});
-        if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-          navigator.share({files:[file],title:"Template Social"}).catch(()=>{});
-        } else {window.open(URL.createObjectURL(blob),"_blank");showToast("Immagine pronta! 📱")}
-      },"image/png");
-    } else {
-      const a=document.createElement("a");
-      a.download=fname+"_"+new Date().toISOString().slice(0,10)+".png";
-      a.href=offCv.toDataURL("image/png");a.click();
-      showToast("Immagine scaricata! ✅");
+    const blob=dataURLtoBlob(dataURL);
+    const canShare=navigator.share&&navigator.canShare;
+    if(canShare){
+      const file=new File([blob],fname+".png",{type:"image/png"});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({files:[file],title:"Template Social"}).catch(()=>{}).finally(()=>{_dlBusy=false});
+        return;
+      }
     }
-  }catch(e){console.error("Export error:",e);_exporting=false;draw();showToast("Errore, riprova ⚠️")}
+    const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+    if(isIOS){window.open(URL.createObjectURL(blob),"_blank")}
+    else{const a=document.createElement("a");a.download=fname+"_"+new Date().toISOString().slice(0,10)+".png";a.href=dataURL;a.click();showToast("Scaricata!")}
+  }catch(e){console.error("Export:",e);_exporting=false;draw();showToast("Errore, riprova")}
+  _dlBusy=false;
 }
 
-// Restore canvas when returning from background (iOS share → Instagram → back)
-document.addEventListener("visibilitychange",()=>{if(!document.hidden&&sel)requestAnimationFrame(draw)});
+// Restore canvas + unlock download on return from background
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden&&sel){_dlBusy=false;requestAnimationFrame(draw)}
+});
 
 // Install banner
 function checkIB(){
