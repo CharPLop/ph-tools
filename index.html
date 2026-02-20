@@ -37,6 +37,7 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 
 /* SCREENS */
 .screen{position:absolute;top:0;left:0;width:100%;min-height:100vh;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;will-change:transform;background:var(--bg);overflow-y:auto;overflow-x:hidden}
+#edS{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
 .screen.hr{transform:translateX(100%);opacity:0;pointer-events:none}
 .screen.hl{transform:translateX(-100%);opacity:0;pointer-events:none}
 .screen.on{transform:translateX(0);opacity:1}
@@ -71,12 +72,12 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 .gc .gd{font-size:10px;color:var(--gray);margin-top:2px}
 
 /* EDITOR */
-.etb{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,50px)+8px) 16px 12px;background:#fff;border-bottom:1px solid var(--border);position:-webkit-sticky;position:sticky;top:0;z-index:50}
+.etb{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,50px)+8px) 16px 12px;background:#fff;border-bottom:1px solid var(--border);z-index:50;flex-shrink:0}
 .bbk{width:auto;height:44px;border-radius:22px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 16px 0 12px;gap:4px;font-size:14px;font-weight:500;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,.1);touch-action:manipulation}
 .bbk svg{width:20px;height:20px;stroke:var(--text);stroke-width:2.5;fill:none}
 .etb .inf .nm{font-size:14px;font-weight:600}
 .etb .inf .dm{font-size:11px;color:var(--gray)}
-.eb{padding:16px 16px calc(80px + var(--safe-b));overflow-x:hidden}
+.eb{padding:16px 16px 16px;overflow-y:auto;overflow-x:hidden;flex:1;-webkit-overflow-scrolling:touch}
 .pvm{border-radius:12px;overflow:hidden;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.1);max-width:100%}
 .pvm canvas{display:block;width:100%;height:auto;max-width:100%}
 .fm{margin-bottom:14px}
@@ -84,7 +85,7 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
 .fm input,.fm textarea{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--border);font-size:15px;background:#fff;outline:none;transition:border .2s;resize:vertical}
 .fm input:focus,.fm textarea:focus{border-color:var(--accent,var(--verde))}
 .fm input::placeholder,.fm textarea::placeholder{color:var(--gray);opacity:.55;font-style:italic}
-.sb{position:fixed;bottom:0;left:0;right:0;padding:12px 16px calc(12px + var(--safe-b));background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);z-index:20;display:none}
+.sb{padding:12px 16px calc(12px + var(--safe-b));background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);z-index:20;display:none;flex-shrink:0}
 .sb.sh{display:flex;gap:10px}
 .bdl{flex:1;padding:15px;border-radius:12px;color:#fff;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s}
 .bdl:active{transform:scale(.97)}
@@ -132,9 +133,9 @@ input,textarea{font-family:inherit;-webkit-appearance:none}
   .screen{position:relative;min-height:auto;overflow-y:visible}
   #app{display:grid;grid-template-columns:340px 1fr 340px;height:100vh;overflow:hidden;max-width:none}
   #galS{overflow-y:auto;border-right:1px solid var(--border)}
-  #edS{overflow-y:hidden;display:flex;align-items:center;justify-content:center;background:#EBEBEB}
+  #edS{overflow-y:hidden;display:flex;flex-direction:row;align-items:center;justify-content:center;background:#EBEBEB;height:auto}
   .etb{display:none}
-  .eb{display:flex;align-items:center;justify-content:center;padding:24px;width:100%;height:100%}
+  .eb{display:flex;align-items:center;justify-content:center;padding:24px;width:100%;height:100%;flex:none;overflow:visible}
   .mob-fields{display:none!important}
   .pvm{margin:0 auto;max-height:calc(100vh - 48px);box-shadow:0 8px 32px rgba(0,0,0,.12)}
   .pvm canvas{width:auto;height:calc(100vh - 80px);max-width:100%;object-fit:contain}
@@ -211,7 +212,7 @@ logoPImg.onload = () => { logoPReady = true; if(sel) draw(); };
 // ══════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════
-let sel=null,vals={},profilo="studio",colore="standard",brandMode="logo",darkMode=false,activeField=null;
+let sel=null,vals={},profilo="studio",colore="standard",brandMode="logo",darkMode=false,activeField=null,_exporting=false;
 const gt=()=>T.find(t=>t.id===sel);
 // Dynamic defaults for firma based on profilo
 const FIRMA_D={
@@ -416,7 +417,17 @@ function draw(targetCanvas){
   const lt=(txt,x,y,o={})=>{const{w="normal",s=24,f="sans",col=P.text,lh=1.5,mw=880}=o;_applyPh();sf(w,s,f);c.fillStyle=col;c.textAlign="left";let cy=y;txt.split("\n").forEach(p=>{if(!p.trim()){cy+=s*.8;return}let ln="";p.split(" ").forEach(wd=>{const test=ln?ln+" "+wd:wd;if(c.measureText(test).width>mw){c.fillText(ln,x,cy);cy+=s*lh;ln=wd}else ln=test});if(ln){c.fillText(ln,x,cy);cy+=s*lh}});_restorePh();return cy};
   const sep=(y,col=P.primary,pct=.35)=>{const lw=W*pct;c.beginPath();c.moveTo((W-lw)/2,y);c.lineTo((W+lw)/2,y);c.strokeStyle=col;c.lineWidth=3;c.stroke()};
   const rr=(x,y,w,h,r,fl,st)=>{c.beginPath();c.roundRect(x,y,w,h,r);if(fl){c.fillStyle=fl;c.fill()}if(st){c.strokeStyle=st;c.lineWidth=2;c.stroke()}};
-  const v=k=>{_phFlag=(!vals[k]||vals[k]==="");return gv(k)};
+  const v=k=>{
+    const empty=(!vals[k]||vals[k]==="");_phFlag=empty;
+    if(_exporting&&empty){
+      // Brand fields (firma) always show default even on export
+      if(FIRMA_D[profilo]?.[k]) return FIRMA_D[profilo][k];
+      const fd=gt()?.fields.find(f=>f.k===k);
+      if(fd?.brand) return gv(k);
+      return "";
+    }
+    return gv(k);
+  };
 
   // Bottom branding: studio always logo-only
   const curLogo=studio?logoImg:logoPImg;
@@ -814,15 +825,6 @@ function buildGal(){
   updatePalettes();
   const tabs=document.getElementById("tabs");
   tabs.innerHTML="";
-  if(userRole==="personale"){
-    [["studio","Studio 🟢","s"],["personale","Personale 🟣","p"]].forEach(([k,l,cls])=>{
-      const b=document.createElement("button");
-      b.className="ptab"+(profilo===k?" on-"+cls:"");
-      b.textContent=l;
-      b.onclick=()=>{switchProfilo(k)};
-      tabs.appendChild(b);
-    });
-  }
 
   const g=document.getElementById("gal");g.innerHTML="";
   const groups=[
@@ -837,7 +839,7 @@ function buildGal(){
     const items=grp.ids.map(id=>T.find(t=>t.id===id)).filter(Boolean);
     if(!items.length)return;
     const sec=document.createElement("div");sec.className="gs";
-    const dotCol=V.primary;
+    const dotCol="#6B7280";
     sec.innerHTML=`<div class="gsl"><span class="dt" style="background:${dotCol}"></span>${grp.label}</div>`;
     g.appendChild(sec);
     const grid=document.createElement("div");grid.className="gg";
@@ -883,7 +885,7 @@ function refreshEditor(){
   const t=gt();if(!t)return;
   const studio=profilo==="studio",ac=V.primary,ac2=V.secondary;
   const pl=studio?"@psicheholos":"@dott.ssa_ileniatagliaferro";
-  document.getElementById("etb").innerHTML=`<button class="bbk" id="btnBack"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Menu</button><div class="inf"><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div>`;
+  document.getElementById("etb").innerHTML=`<button class="bbk" id="btnBack"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Template</button><div class="inf"><div class="nm" style="color:${ac}">${t.name}</div><div class="dm">${pl} · ${t.a==="st"?"1080×1920":"1080×1080"}</div></div>`;
   document.getElementById("btnBack").addEventListener("click",closeEd);
   document.getElementById("btnBack").addEventListener("touchend",function(e){e.preventDefault();closeEd()},{passive:false});
 
@@ -966,11 +968,11 @@ function refreshEditor(){
   buildFields(document.getElementById("dfBody"));
 
   // Desktop actions
-  document.getElementById("dfActs").innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2});width:100%" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica PNG</button><button class="brs" style="width:100%;margin-top:8px" onclick="resetF()"><svg viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg>Ripristina</button>`;
+  document.getElementById("dfActs").innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2});width:100%" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica</button><button class="brs" style="width:100%;margin-top:8px" onclick="resetF()"><svg viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg>Ripristina</button>`;
 
   // Mobile sticky bar
   const bar=document.getElementById("sb");bar.className="sb sh";
-  bar.innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2})" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica PNG</button><button class="brs" onclick="resetF()"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg></button>`;
+  bar.innerHTML=`<button class="bdl" style="background:linear-gradient(135deg,${ac},${ac2})" onclick="exportPNG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica</button><button class="brs" onclick="resetF()"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-12.36L1 10"/></svg></button>`;
 
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     draw();
@@ -1014,12 +1016,17 @@ function closeEd(){
 function resetF(){vals={};refreshEditor()}
 
 function exportPNG(){
-  draw();const cv=document.getElementById("cv"),t=gt();
+  _exporting=true;
+  const t=gt(),isS=t.a==="st",W=1080,H=isS?1920:1080;
+  const offCv=document.createElement("canvas");offCv.width=W;offCv.height=H;
+  draw(offCv);
+  _exporting=false;
+  draw(); // redraw preview with placeholders
   const pName=profilo==="studio"?"studio":"personale";
   const dkTag=darkMode?"_dark":"";
   const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
   if(isIOS){
-    cv.toBlob(blob=>{
+    offCv.toBlob(blob=>{
       const file=new File([blob],`${pName}_${t.id}${dkTag}.png`,{type:"image/png"});
       if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
         navigator.share({files:[file],title:"Template Social"}).then(()=>showToast("Condiviso! ✨")).catch(()=>{window.open(URL.createObjectURL(blob),"_blank")});
@@ -1028,7 +1035,7 @@ function exportPNG(){
   } else {
     const a=document.createElement("a");
     a.download=`${pName}_${t.id}${dkTag}_${new Date().toISOString().slice(0,10)}.png`;
-    a.href=cv.toDataURL("image/png");a.click();
+    a.href=offCv.toDataURL("image/png");a.click();
     showToast("Immagine scaricata! ✅");
   }
 }
