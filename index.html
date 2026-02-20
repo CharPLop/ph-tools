@@ -987,24 +987,39 @@ function closeEd(){
 
 // Swipe right → back to templates (mobile)
 (function(){
-  let sx=0,sy=0,tracking=false;
+  let sx=0,sy=0,tracking=false,moved=false;
   const ed=()=>document.getElementById("edS");
   document.addEventListener("touchstart",e=>{
     if(window.innerWidth>=768||!sel)return;
-    const t=e.touches[0];sx=t.clientX;sy=t.clientY;tracking=sx<60;
+    const t=e.touches[0];sx=t.clientX;sy=t.clientY;
+    tracking=sx<40;moved=false;
   },{passive:true});
   document.addEventListener("touchmove",e=>{
     if(!tracking)return;
     const dx=e.touches[0].clientX-sx;
-    if(dx>0){const el=ed();if(el)el.style.transform=`translateX(${Math.min(dx,300)}px)`;el.style.opacity=Math.max(.3,1-dx/300)}
+    const dy=Math.abs(e.touches[0].clientY-sy);
+    if(!moved&&dy>dx){tracking=false;return} // vertical scroll, abort
+    if(dx>10)moved=true;
+    if(dx>0){const el=ed();if(el){el.style.transform=`translateX(${Math.min(dx,300)}px)`;el.style.opacity=String(Math.max(.3,1-dx/300))}}
   },{passive:true});
   document.addEventListener("touchend",e=>{
-    if(!tracking)return;tracking=false;
+    if(!tracking){return}tracking=false;
     const el=ed();if(!el)return;
     const dx=e.changedTouches[0].clientX-sx;
-    el.style.transition="transform .25s,opacity .25s";
-    if(dx>80){closeEd()}else{el.style.transform="";el.style.opacity=""}
-    setTimeout(()=>{el.style.transition="";},300);
+    if(dx>80){
+      // Animate out, then clean up
+      el.style.transition="transform .2s ease-out,opacity .2s ease-out";
+      el.style.transform="translateX(100%)";el.style.opacity="0";
+      setTimeout(()=>{
+        el.style.transition="";el.style.transform="";el.style.opacity="";
+        closeEd();
+      },220);
+    }else{
+      // Snap back
+      el.style.transition="transform .2s,opacity .2s";
+      el.style.transform="";el.style.opacity="";
+      setTimeout(()=>{el.style.transition=""},220);
+    }
   },{passive:true});
 })();
 
