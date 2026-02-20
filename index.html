@@ -1016,29 +1016,40 @@ function closeEd(){
 function resetF(){vals={};refreshEditor()}
 
 function exportPNG(){
-  _exporting=true;
-  const t=gt(),isS=t.a==="st",W=1080,H=isS?1920:1080;
-  const offCv=document.createElement("canvas");offCv.width=W;offCv.height=H;
-  draw(offCv);
-  _exporting=false;
-  draw(); // redraw preview with placeholders
-  const pName=profilo==="studio"?"studio":"personale";
-  const dkTag=darkMode?"_dark":"";
-  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
-  if(isIOS){
-    offCv.toBlob(blob=>{
-      const file=new File([blob],`${pName}_${t.id}${dkTag}.png`,{type:"image/png"});
-      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-        navigator.share({files:[file],title:"Template Social"}).then(()=>showToast("Condiviso! ✨")).catch(()=>{window.open(URL.createObjectURL(blob),"_blank")});
-      } else {window.open(URL.createObjectURL(blob),"_blank");showToast("Immagine pronta! 📱")}
-    },"image/png");
-  } else {
-    const a=document.createElement("a");
-    a.download=`${pName}_${t.id}${dkTag}_${new Date().toISOString().slice(0,10)}.png`;
-    a.href=offCv.toDataURL("image/png");a.click();
-    showToast("Immagine scaricata! ✅");
-  }
+  const t=gt();if(!t)return;
+  try{
+    // Force fresh draw on visible canvas first (restores context after iOS background)
+    _exporting=false;
+    draw();
+    _exporting=true;
+    const isS=t.a==="st",W=1080,H=isS?1920:1080;
+    const offCv=document.createElement("canvas");offCv.width=W;offCv.height=H;
+    draw(offCv);
+    _exporting=false;
+    draw(); // restore preview with placeholders
+    const pName=profilo==="studio"?"studio":"personale";
+    const dkTag=darkMode?"_dark":"";
+    const fname=`${pName}_${t.id}${dkTag}`;
+    const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+    if(isIOS){
+      offCv.toBlob(blob=>{
+        if(!blob){showToast("Errore, riprova ⚠️");return}
+        const file=new File([blob],fname+".png",{type:"image/png"});
+        if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+          navigator.share({files:[file],title:"Template Social"}).catch(()=>{});
+        } else {window.open(URL.createObjectURL(blob),"_blank");showToast("Immagine pronta! 📱")}
+      },"image/png");
+    } else {
+      const a=document.createElement("a");
+      a.download=fname+"_"+new Date().toISOString().slice(0,10)+".png";
+      a.href=offCv.toDataURL("image/png");a.click();
+      showToast("Immagine scaricata! ✅");
+    }
+  }catch(e){console.error("Export error:",e);_exporting=false;draw();showToast("Errore, riprova ⚠️")}
 }
+
+// Restore canvas when returning from background (iOS share → Instagram → back)
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&sel)requestAnimationFrame(draw)});
 
 // Install banner
 function checkIB(){
