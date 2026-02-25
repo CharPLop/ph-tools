@@ -389,12 +389,106 @@ function draw(targetCanvas){
   const branch=(sx,sy,ang,len,n=5)=>{const c1=P.primary,c2=P.secondary;const ex=sx+len*Math.cos(ang*Math.PI/180),ey=sy+len*Math.sin(ang*Math.PI/180);c.beginPath();c.moveTo(sx,sy);c.lineTo(ex,ey);c.strokeStyle=c2+"60";c.lineWidth=1.5;c.stroke();for(let i=0;i<n;i++){const tt=(i+1)/(n+1);drawLeaf(sx+(ex-sx)*tt,sy+(ey-sy)*tt,12+Math.sin(i*7)*5,ang+(i%2===0?40:-40),i%2===0?c1:c2)}};
   const corner=(pos,sc=1)=>{if(pos==="tr")for(let i=0;i<4;i++)branch(W-30-i*40,20+i*30,200+i*15,110*sc,5);if(pos==="bl")for(let i=0;i<4;i++)branch(30+i*40,H-20-i*30,20-i*15,110*sc,5);if(pos==="tl")for(let i=0;i<3;i++)branch(30+i*35,20+i*25,-20+i*10,90*sc,4)};
   const sf=(w,s,fam="serif")=>{c.font=`${w} ${s}px ${fam==="serif"?"'Playfair Display',Georgia,serif":"'Montserrat','Segoe UI',sans-serif"}`};
+
+  // Rich text parser: *bold* _italic_ ~accent~
+  const parseRT=(txt)=>{
+    const tokens=[];
+    const re=/(\*[^*]+\*|_[^_]+_|~[^~]+~)/g;
+    let last=0,m;
+    while((m=re.exec(txt))!==null){
+      if(m.index>last)tokens.push(...txt.slice(last,m.index).split(" ").filter(Boolean).map(t=>({t,b:false,i:false,a:false})));
+      const mark=m[0][0],inner=m[0].slice(1,-1);
+      inner.split(" ").filter(Boolean).forEach(t=>tokens.push({t,b:mark==="*",i:mark==="_",a:mark==="~"}));
+      last=re.lastIndex;
+    }
+    if(last<txt.length)tokens.push(...txt.slice(last).split(" ").filter(Boolean).map(t=>({t,b:false,i:false,a:false})));
+    return tokens;
+  };
+
+  // Measure a token with the right font applied
+  const tkFont=(tk,baseW,baseS,baseF)=>{
+    const w=tk.b?"bold":tk.i?"italic":baseW;
+    sf(w,baseS,baseF);
+    return c.measureText(tk.t).width;
+  };
+  const tkApply=(tk,baseW,baseS,baseF,baseCol,acCol)=>{
+    const w=tk.b?"bold":tk.i?"italic":baseW;
+    sf(w,baseS,baseF);
+    c.fillStyle=tk.a?acCol:baseCol;
+  };
+
   // Placeholder-aware text helpers: auto-dim when _phFlag is true
   let _phFlag=false;
   const _applyPh=()=>{if(_phFlag&&!targetCanvas){c.save();c.globalAlpha=.4}};
   const _restorePh=()=>{if(_phFlag&&!targetCanvas){c.restore();_phFlag=false}};
-  const ct=(txt,y,o={})=>{const{w="bold",s=42,f="serif",col=P.primary,lh=1.35,mw=920}=o;_applyPh();sf(w,s,f);c.fillStyle=col;c.textAlign="center";let cy=y;txt.split("\n").forEach(para=>{if(!para.trim()){cy+=s*.5;return}let ln="";para.split(" ").forEach(wd=>{const test=ln?ln+" "+wd:wd;if(c.measureText(test).width>mw){c.fillText(ln,W/2,cy);cy+=s*lh;ln=wd}else ln=test});if(ln){c.fillText(ln,W/2,cy);cy+=s*lh}});_restorePh();return cy};
-  const lt=(txt,x,y,o={})=>{const{w="normal",s=24,f="sans",col=P.text,lh=1.5,mw=880}=o;_applyPh();sf(w,s,f);c.fillStyle=col;c.textAlign="left";let cy=y;txt.split("\n").forEach(p=>{if(!p.trim()){cy+=s*.8;return}let ln="";p.split(" ").forEach(wd=>{const test=ln?ln+" "+wd:wd;if(c.measureText(test).width>mw){c.fillText(ln,x,cy);cy+=s*lh;ln=wd}else ln=test});if(ln){c.fillText(ln,x,cy);cy+=s*lh}});_restorePh();return cy};
+
+  // Rich text center draw
+  const ct=(txt,y,o={})=>{
+    const{w="bold",s=42,f="serif",col=P.primary,lh=1.35,mw=920,acCol}=o;
+    const ac2=acCol||(dk?P.accent:P.secondary);
+    _applyPh();sf(w,s,f);c.textAlign="left";
+    let cy=y;
+    txt.split("\n").forEach(para=>{
+      if(!para.trim()){cy+=s*.5;return}
+      const tks=parseRT(para);
+      // Build lines
+      const lines=[];let line=[];let lw=0;const sp=c.measureText(" ").width;
+      tks.forEach(tk=>{
+        const tw=tkFont(tk,w,s,f);
+        const need=line.length>0?sp+tw:tw;
+        if(lw+need>mw&&line.length>0){lines.push(line);line=[tk];lw=tw}
+        else{line.push(tk);lw+=need}
+      });
+      if(line.length)lines.push(line);
+      // Draw centered lines
+      lines.forEach(ln=>{
+        // Measure total line width
+        let total=0;sf(w,s,f);const spW=c.measureText(" ").width;
+        ln.forEach((tk,i)=>{total+=tkFont(tk,w,s,f);if(i<ln.length-1)total+=spW});
+        let dx=(W-total)/2;
+        ln.forEach((tk,i)=>{
+          tkApply(tk,w,s,f,col,ac2);
+          c.fillText(tk.t,dx,cy);
+          dx+=tkFont(tk,w,s,f);
+          if(i<ln.length-1)dx+=spW;
+        });
+        cy+=s*lh;
+      });
+    });
+    _restorePh();return cy;
+  };
+
+  // Rich text left-aligned draw
+  const lt=(txt,x,y,o={})=>{
+    const{w="normal",s=24,f="sans",col=P.text,lh=1.5,mw=880,acCol}=o;
+    const ac2=acCol||(dk?P.accent:P.secondary);
+    _applyPh();sf(w,s,f);c.textAlign="left";
+    let cy=y;
+    txt.split("\n").forEach(para=>{
+      if(!para.trim()){cy+=s*.8;return}
+      const tks=parseRT(para);
+      const lines=[];let line=[];let lw=0;const sp=c.measureText(" ").width;
+      tks.forEach(tk=>{
+        const tw=tkFont(tk,w,s,f);
+        const need=line.length>0?sp+tw:tw;
+        if(lw+need>mw&&line.length>0){lines.push(line);line=[tk];lw=tw}
+        else{line.push(tk);lw+=need}
+      });
+      if(line.length)lines.push(line);
+      lines.forEach(ln=>{
+        sf(w,s,f);const spW=c.measureText(" ").width;
+        let dx=x;
+        ln.forEach((tk,i)=>{
+          tkApply(tk,w,s,f,col,ac2);
+          c.fillText(tk.t,dx,cy);
+          dx+=tkFont(tk,w,s,f);
+          if(i<ln.length-1)dx+=spW;
+        });
+        cy+=s*lh;
+      });
+    });
+    _restorePh();return cy;
+  };
   const sep=(y,col=P.primary,pct=.35)=>{const lw=W*pct;c.beginPath();c.moveTo((W-lw)/2,y);c.lineTo((W+lw)/2,y);c.strokeStyle=col;c.lineWidth=3;c.stroke()};
   const rr=(x,y,w,h,r,fl,st)=>{c.beginPath();c.roundRect(x,y,w,h,r);if(fl){c.fillStyle=fl;c.fill()}if(st){c.strokeStyle=st;c.lineWidth=2;c.stroke()}};
   const v=k=>{
@@ -456,8 +550,9 @@ function draw(targetCanvas){
     case"B":{
       dk?bgDark():fill(P.white);corner("tr",.5);
       c.fillStyle=T1;c.fillRect(0,0,W,6);
-      sf("bold",30,"sans");c.fillStyle=T1;c.textAlign="left";c.fillText(v("title"),70,90);
-      sep(120,T3+"90",.4);lt(v("body"),70,175,{col:T2});
+      var bty=ct(v("title"),130,{s:38,col:T1,f:"sans"});
+      sep(bty+10,T3+"90",.35);
+      ct(v("body"),bty+50,{w:"normal",s:26,f:"sans",col:T2,lh:1.55});
       sf("300",16,"sans");c.fillStyle=T3;c.textAlign="right";c.fillText(v("slide"),W-40,H-35);
       break;
     }
@@ -495,7 +590,7 @@ function draw(targetCanvas){
         lines.forEach((l,i)=>{c.fillText(l,txtX,py);py+=bFS*bLH});
         py+=gap-bFS*bLH;
       });
-      ct(v("cta"),Math.max(py+20,880),{w:"500",s:19,f:"sans",col:T3});
+      ct(v("cta"),Math.max(py+20,880),{w:"500",s:20,f:"sans",col:T3});
       bottomBrand(H-52);
       break;
     }
@@ -516,7 +611,7 @@ function draw(targetCanvas){
       bg();corner("tr",1);corner("bl",1);
       ct(v("title"),240,{s:48,col:T1});
       sep(290,T1,.3);
-      ct(v("body"),370,{w:"normal",s:24,f:"sans",col:T2,lh:1.6});
+      ct(v("body"),370,{w:"normal",s:26,f:"sans",col:T2,lh:1.55});
       rr(W/2-320,680,640,65,33,T1+"18",T1+"40");
       ct(v("cta"),723,{w:"600",s:22,f:"sans",col:T1});
       bottomBrand(H-52);
@@ -539,7 +634,7 @@ function draw(targetCanvas){
       ct(v("title"),140,{s:36,col:"#FFFFFF",lh:1.3});
       c.fillStyle=T1;c.fillRect(0,318,W,4);
       var items=(v("items")||"").split("\n").filter(p=>p.trim()),
-          iFS=21,dotX=75,txtX=115,maxW=W-txtX-60,
+          iFS=22,dotX=75,txtX=115,maxW=W-txtX-60,
           avail=H-360-120,gap=items.length>1?Math.min(75,Math.max(45,avail/items.length)):75,
           iy=380;
       items.forEach((it,idx)=>{
@@ -571,7 +666,7 @@ function draw(targetCanvas){
     case"PA":{
       dk?bgDark():(fill(P.bg),blob(200,300,260,P.accent),blob(800,700,240,P.light));
       corner("tr",.8);corner("bl",.6);
-      ct("Prima / Dopo",100,{s:30,col:T3,f:"sans"});
+      ct("Prima / Dopo",100,{s:34,col:T3,f:"sans"});
       var cardW=420,cardH=350,gapX=40,sx=(W-cardW*2-gapX)/2;
       var ctAt=function(txt,cx,y,fs,col,maxW){
         sf("bold",fs,"serif");c.fillStyle=col;c.textAlign="center";
@@ -605,7 +700,7 @@ function draw(targetCanvas){
       sf("normal",36,"sans");c.fillStyle=T3;c.textAlign="center";
       c.fillText("★".repeat(starN)+"☆".repeat(5-starN),W/2,starY);
       sf("bold",120,"serif");c.fillStyle=T4;c.textAlign="left";c.fillText("\u201C",80,310);
-      ct(v("quote"),380,{w:"italic",s:30,col:T1,lh:1.45});
+      ct(v("quote"),380,{w:"italic",s:32,col:T1,lh:1.45});
       sf("bold",120,"serif");c.fillStyle=T4;c.textAlign="right";c.fillText("\u201D",1000,660);
       sep(720,T3,.2);
       ct(v("author"),770,{w:"300",s:20,f:"sans",col:T2});
@@ -619,7 +714,7 @@ function draw(targetCanvas){
       ct(v("title"),140,{s:36,col:"#FFFFFF",lh:1.3});
       c.fillStyle=T1;c.fillRect(0,338,W,4);
       var steps=(v("steps")||"").split("\n").filter(p=>p.trim()),
-          sFS=21,sDotX=75,sTxtX=115,sMaxW=W-sTxtX-60,
+          sFS=22,sDotX=75,sTxtX=115,sMaxW=W-sTxtX-60,
           sAvail=H-380-140,sGap=steps.length>1?Math.min(80,Math.max(50,sAvail/steps.length)):80,
           sy=400;
       steps.forEach((st,i)=>{
@@ -660,7 +755,7 @@ function draw(targetCanvas){
       sf("bold",40,"sans");c.fillStyle="#FFFFFF";c.textAlign="center";
       var initials=(v("nome")||"").split(" ").map(w=>w[0]||"").join("").slice(0,2).toUpperCase();
       c.fillText(initials,W/2,195);
-      ct(v("nome"),290,{s:30,col:"#FFFFFF"});
+      ct(v("nome"),290,{s:34,col:"#FFFFFF"});
       ct(v("titolo"),335,{w:"300",s:18,f:"sans",col:"#FFFFFF"});
       c.fillStyle=T1;c.fillRect(0,378,W,4);
       ct(v("bio"),460,{w:"normal",s:22,f:"sans",col:T2,lh:1.55,mw:860});
@@ -678,11 +773,11 @@ function draw(targetCanvas){
           cy=310;
       citems.forEach(it=>{
         rr(120,cy-28,W-240,55,12,cardFl,cardBd);
-        sf("normal",21,"sans");c.fillStyle=T2;c.textAlign="center";
+        sf("normal",22,"sans");c.fillStyle=T2;c.textAlign="center";
         c.fillText(it,W/2,cy+2);
         cy+=72;
       });
-      ct(v("cta"),Math.max(cy+20,850),{w:"500",s:19,f:"sans",col:T3});
+      ct(v("cta"),Math.max(cy+20,850),{w:"500",s:20,f:"sans",col:T3});
       bottomBrand(H-52);
       break;
     }
@@ -911,6 +1006,10 @@ function refreshEditor(){
 
     // ── CONTENUTO ──
     sec("Contenuto");
+    const fmtHint=document.createElement("div");
+    fmtHint.style.cssText="font-size:10px;color:var(--gray);padding:0 0 8px;line-height:1.6";
+    fmtHint.innerHTML='<span style="font-weight:700">*grassetto*</span> · <span style="font-style:italic">_corsivo_</span> · <span style="color:'+ac+'">~colore~</span>';
+    container.appendChild(fmtHint);
     t.fields.forEach(fd=>{
       if(fd.brand && effBrand==="logo") return;
       const d=document.createElement("div");d.className="fm";
@@ -1053,6 +1152,7 @@ function exportPNG(){
     if(canShare){
       const file=new File([blob],fname+".png",{type:"image/png"});
       if(navigator.canShare({files:[file]})){
+        showToast("Tocca 'Salva immagine' per salvare");
         navigator.share({files:[file],title:"Template Social"}).catch(()=>{}).finally(()=>{_dlBusy=false});
         return;
       }
